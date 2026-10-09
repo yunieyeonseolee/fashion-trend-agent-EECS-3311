@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<diagram program="umlet" version="15.0.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLSequenceAllInOne</id>
+    <coordinates>
+      <x>10</x>
+      <y>10</y>
+      <w>1305</w>
+      <h>818</h>
+    </coordinates>
+    <panel_attributes>title=SD03 — Compare Two Trends (F08)
+obj=User~u ACTOR
+obj=TrendGUI~gui
+obj=AgentController~ctl
+obj=CompareCommand~cmd
+obj=FashionTrendAgent~agent
+obj=ToolManager~tools
+obj=TrendRepository~repo
+obj=TrendAnalyzer~an
+obj=LLMClient~llm
+
+u-&gt;&gt;&gt;gui : compare(a, b)
+gui-&gt;&gt;&gt;ctl : execute(CompareCommand(request))
+ctl-&gt;&gt;&gt;cmd : execute()
+cmd-&gt;&gt;&gt;agent : run(request)
+agent-&gt;&gt;&gt;tools : execute(plan)
+tools-&gt;&gt;&gt;repo : getSignals(a) / getSignals(b)
+repo.&gt;tools : two signal series
+tools-&gt;&gt;&gt;an : calculateMomentum(series A / B)
+an.&gt;tools : two analyses
+tools-&gt;&gt;&gt;an : classifyLifecycle(analysis A / B)
+an.&gt;tools : two lifecycles
+tools-&gt;&gt;&gt;an : compare(analysisA, analysisB)
+an.&gt;tools : ComparisonResult
+tools.&gt;agent : EvidenceBundle
+agent-&gt;&gt;&gt;llm : explain(evidence)
+llm.&gt;agent : summary
+agent.&gt;cmd : AgentResponse
+cmd.&gt;ctl : AgentResponse
+ctl.&gt;gui : AgentResponse
+tick=1
+// If either trend is unavailable, return a partial comparison with a data warning.</panel_attributes>
+    <additional_attributes></additional_attributes>
+  </element>
+</diagram>

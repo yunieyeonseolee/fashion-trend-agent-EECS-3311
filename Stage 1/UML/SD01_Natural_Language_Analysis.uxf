@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<diagram program="umlet" version="15.0.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLSequenceAllInOne</id>
+    <coordinates>
+      <x>10</x>
+      <y>10</y>
+      <w>1450</w>
+      <h>882</h>
+    </coordinates>
+    <panel_attributes>title=SD01 — Natural-Language Trend Analysis (F01,F02,F04,F05)
+obj=User~u ACTOR
+obj=TrendGUI~gui
+obj=AgentController~ctl
+obj=AnalyzeCommand~cmd
+obj=FashionTrendAgent~agent
+obj=AgentPlanner~planner
+obj=LLMClient~llm
+obj=ToolManager~tools
+obj=TrendRepository~repo
+obj=TrendAnalyzer~an
+
+u-&gt;&gt;&gt;gui : submitQuery(question)
+gui-&gt;&gt;&gt;ctl : execute(AnalyzeCommand(request))
+ctl-&gt;&gt;&gt;cmd : execute()
+cmd-&gt;&gt;&gt;agent : run(request)
+agent-&gt;&gt;&gt;planner : createPlan(request)
+planner-&gt;&gt;&gt;llm : interpret(query)
+llm.&gt;planner : Intent
+planner.&gt;agent : AgentPlan
+agent-&gt;&gt;&gt;tools : execute(plan)
+tools-&gt;&gt;&gt;repo : findByName(name) / getSignals(name)
+repo.&gt;tools : trend and signals
+tools-&gt;&gt;&gt;an : calculateMomentum(signals)
+an.&gt;tools : TrendAnalysis
+tools-&gt;&gt;&gt;an : classifyLifecycle(analysis)
+an.&gt;tools : Lifecycle
+tools.&gt;agent : EvidenceBundle
+agent-&gt;&gt;&gt;llm : explain(evidence)
+llm.&gt;agent : explanation
+agent.&gt;cmd : AgentResponse
+cmd.&gt;ctl : AgentResponse
+ctl.&gt;gui : AgentResponse
+tick=1
+// No data: return insufficient-data. LLM failure: preserve deterministic metrics.</panel_attributes>
+    <additional_attributes></additional_attributes>
+  </element>
+</diagram>

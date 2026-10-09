@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<diagram program="umlet" version="15.0.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLSequenceAllInOne</id>
+    <coordinates>
+      <x>10</x>
+      <y>10</y>
+      <w>1450</w>
+      <h>882</h>
+    </coordinates>
+    <panel_attributes>title=SD06 — Generate Evidence-Based Intelligence Report (F10)
+obj=User~u ACTOR
+obj=TrendGUI~gui
+obj=AgentController~ctl
+obj=ReportCommand~cmd
+obj=FashionTrendAgent~agent
+obj=AgentPlanner~planner
+obj=ToolManager~tools
+obj=TrendRepository~repo
+obj=TrendAnalyzer~an
+obj=LLMClient~llm
+
+u-&gt;&gt;&gt;gui : requestReport(name)
+gui-&gt;&gt;&gt;ctl : execute(ReportCommand(request))
+ctl-&gt;&gt;&gt;cmd : execute()
+cmd-&gt;&gt;&gt;agent : generateReport(request)
+agent-&gt;&gt;&gt;planner : createPlan(request)
+planner.&gt;agent : AgentPlan
+agent-&gt;&gt;&gt;tools : execute(plan)
+tools-&gt;&gt;&gt;repo : getSignals(trend)
+repo.&gt;tools : signals
+tools-&gt;&gt;&gt;an : calculateMomentum(signals)
+an.&gt;tools : TrendAnalysis
+tools-&gt;&gt;&gt;an : classifyLifecycle(analysis)
+an.&gt;tools : Lifecycle
+tools-&gt;&gt;&gt;repo : findByCategory(category) [optional]
+repo.&gt;tools : related trends
+tools.&gt;agent : EvidenceBundle
+agent-&gt;&gt;&gt;llm : generateReport(evidence)
+llm.&gt;agent : narrative
+agent.&gt;cmd : TrendReport in AgentResponse
+cmd.&gt;ctl : AgentResponse
+ctl.&gt;gui : AgentResponse
+tick=1
+// If the LLM fails, deliver the structured metrics and source labels without narrative.</panel_attributes>
+    <additional_attributes></additional_attributes>
+  </element>
+</diagram>
