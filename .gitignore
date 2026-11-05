@@ -218,3 +218,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Java output and local credentials
+*.class
+.env.*
+!.env.example
+config.local.json
+.DS_Store

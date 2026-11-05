@@ -1,0 +1,13 @@
+trend,category,date,popularity,source
+Mary Jane Flats,footwear,2026-08-01,20,synthetic-example
+Mary Jane Flats,footwear,2026-09-01,28,synthetic-example
+Mary Jane Flats,footwear,2026-10-01,42,synthetic-example
+Mary Jane Flats,footwear,2026-11-01,58,synthetic-example
+Chunky Sneakers,footwear,2026-08-01,80,synthetic-example
+Chunky Sneakers,footwear,2026-09-01,72,synthetic-example
+Chunky Sneakers,footwear,2026-10-01,60,synthetic-example
+Chunky Sneakers,footwear,2026-11-01,48,synthetic-example
+Bag Charms,accessories,2026-08-01,8,synthetic-example
+Bag Charms,accessories,2026-09-01,12,synthetic-example
+Bag Charms,accessories,2026-10-01,19,synthetic-example
+Bag Charms,accessories,2026-11-01,31,synthetic-example
