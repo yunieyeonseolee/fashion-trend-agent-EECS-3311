@@ -76,6 +76,8 @@ GUI launch instructions will be added when the GUI exists.
 
 - [Implementation milestones and feature/pattern status](docs/stage2-plan.md)
 - [AI collaboration log](docs/ai-collaboration.md)
+- [Weekly commit summary](docs/weekly-commits.md)
+- [Stage 2 report draft](stage2-report.md)
 
 The final submission also needs `stage2-report.pdf`, updated diagrams, a weekly
 commit summary, and accessible demonstration videos for every implemented feature.
