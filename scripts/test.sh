@@ -7,3 +7,4 @@ javac --release 17 -d build/test-classes @build/test-sources.txt
 java -cp build/test-classes fashion.DataLayerTest
 java -cp build/test-classes fashion.AnalysisTest
 java -cp build/test-classes fashion.ApplicationTest
+java -Djava.awt.headless=true -cp build/test-classes fashion.GuiTest

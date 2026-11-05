@@ -9,9 +9,10 @@ AI usage is recorded in [the collaboration log](docs/ai-collaboration.md).
 
 ## 1. Project overview and implementation status
 
-The Java backend and CLI implement CSV import, search/history, deterministic
-analysis, ranking, microtrend discovery and comparison through shared commands,
-AgentController and FashionTrendAgent. GUI and LLM integration remain incomplete. Sample observations are synthetic.
+The Java backend, CLI and Swing GUI implement CSV import, search/history,
+deterministic analysis, ranking, microtrend discovery and comparison through shared
+commands, AgentController and FashionTrendAgent. The GUI also plots history.
+LLM integration, natural-language planning and AI reports remain incomplete. Sample observations are synthetic.
 
 ## 2. Feature-to-implementation mapping
 
@@ -20,10 +21,14 @@ Expand with final class responsibilities, methods, collaborations and video link
 
 ## 3. Implemented design patterns
 
-Four patterns are currently implemented: Adapter, Strategy, Command and Facade.
-MVC awaits the GUI. The [current class/sequence diagrams](docs/architecture.md)
+Five patterns are currently implemented: Adapter, Strategy, Command, Facade and MVC. The [current class/sequence diagrams](docs/architecture.md)
 reflect the implemented deterministic workflow.
 
+- **MVC:** `TrendGUI` is the view, collecting inputs and rendering results;
+  `HistoryChart` draws stored observations. `AgentController.execute()` invokes
+  commands; `TrendRepository`, `TrendSignal` and `TrendAnalysis` provide model state.
+  The GUI performs no scoring or CSV parsing. It uses SwingWorker to run operations
+  off the event thread and updates the view on completion. These roles match Stage 1.
 - **Command:** `Command.execute()` is the operation contract. `AgentCommand` stores
   the receiver/request; `ImportCommand`, `AnalyzeCommand`, `DiscoverCommand` and
   `CompareCommand` validate their operation family and invoke the receiver.
@@ -46,7 +51,10 @@ The initial direct CLI-to-repository wiring has been replaced with the Stage 1
 controller/command/facade chain. AgentResponse now carries immutable matches,
 observations, analyses and diagnostics. F08 returns partial evidence when one trend
 is missing instead of discarding available results; ambiguous categories remain an
-explicit error. ToolManager is still deferred to the LLM integration milestone.
+explicit error. ToolManager is still deferred to the LLM integration milestone. Swing was chosen
+for a dependency-free desktop GUI; a reusable operation form provides the planned
+GUI functionality through shared commands. History uses observed points, leaving
+unobserved periods empty rather than implying interpolated measurements.
 
 ## 5. AI tools and collaboration log
 
@@ -79,10 +87,12 @@ in later periods do not compensate for earlier periods.
 ### Verification and limitations
 
 `./scripts/test.sh` passes 17 data-layer checks, 19 analysis checks and 19 application
-workflow checks (55 total). Eight CLI
+workflow checks plus 18 Swing GUI checks (73 total). Eight CLI
 smoke/error checks also passed. A malformed Java string in a CSV test fixture was
 corrected before the successful run. Current limitations include in-memory storage,
-heuristic scoring, synthetic sample data, and incomplete GUI/LLM workflows.
+heuristic scoring, synthetic sample data, and incomplete LLM workflows. Headless
+GUI checks exercised real controls/workers and produced an inspected preview;
+native window/file-picker interactions still require a manual desktop/demo pass.
 
 ## 7. Demonstration index
 

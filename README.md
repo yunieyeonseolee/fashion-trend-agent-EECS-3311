@@ -7,8 +7,8 @@ Stage 2 is due November 10, 2026.
 
 The first runnable milestone provides CSV import/normalization (F03), trend search
 and filtered retrieval (F02), deterministic analysis and discovery/comparison (F04–F08),
-and the CLI portion of history (F09). Commands now run through a shared controller
-and facade. The GUI, agent planning and LLM integration are **not implemented yet**. See the
+and history visualization (F09). The Swing GUI and CLI use the same shared controller
+and facade. Agent planning and LLM integration are **not implemented yet**. See the
 [implementation plan and feature mapping](docs/stage2-plan.md).
 
 ## Prerequisites and running
@@ -39,6 +39,32 @@ The repository currently lives in memory. Each command loads its supplied CSV;
 import does not create a persistent database. `TrendRepository` also deduplicates
 repeated imports within the same process.
 
+## Desktop GUI
+
+```bash
+./scripts/gui.sh
+# Or preload the synthetic sample CSV:
+./scripts/gui.sh data/sample-trends.csv
+```
+
+Requires a graphical desktop and JDK 17+. Use **Import CSV…**, then select Search,
+History, Analyze, Discover, Emerging or Compare. Enter the trend/category required
+by that operation and click **Run**. History and analysis require an exact trend
+name; Search accepts name fragments. Category discovery requires a category.
+Blank category/date fields mean no filter; dates are inclusive. Disabled fields do
+not affect requests. Choose Momentum or Growth for discovery rankings.
+
+Results appear in a sortable, read-only table; warnings and errors appear below.
+The history chart shows date-spaced points on a 0–100 scale, averaging observations
+on the same date without interpolating unobserved dates. If a name spans multiple
+categories, filter to one category to draw its chart. Import and analysis run on a
+background worker, with controls disabled until the result has been rendered.
+Imports accumulate in the current session; closing the app discards in-memory data.
+
+The GUI has no AI query/report buttons yet; those will be added with working LLM
+integration. `./scripts/test.sh` includes headless Swing interaction checks and writes
+an ignored preview image to `build/gui-preview.png`.
+
 ## CSV format
 
 UTF-8 CSV, with required headers `trend,category,date,popularity,source` in any
@@ -61,7 +87,7 @@ The CLI parses input into `AgentRequest`, constructs an `ImportCommand`,
 `AnalyzeCommand`, `DiscoverCommand` or `CompareCommand`, and submits it through
 `AgentController`. The command delegates to `FashionTrendAgent`, which coordinates
 repository access, analysis and ranking. Every operation returns an immutable
-`AgentResponse` suitable for both CLI rendering and the upcoming GUI. Expected
+`AgentResponse` suitable for both CLI and Swing GUI rendering. Expected
 import/request failures become error responses. Comparison preserves available
 results and includes warnings when one trend lacks data.
 
@@ -82,7 +108,7 @@ cp .env.example .env
 When LLM integration is implemented, enter your API key locally and choose a model
 ID supported by your provider. The current CLI does not read `.env` or call an LLM.
 Never commit credentials; local `.env` variants and `config.local.json` are ignored.
-GUI launch instructions will be added when the GUI exists.
+The desktop GUI does not call an LLM yet either.
 
 ## Stage 2 records
 

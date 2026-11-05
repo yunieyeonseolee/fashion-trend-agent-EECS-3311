@@ -16,9 +16,9 @@ describes the implemented source, not a completed Stage 2 submission. See
 3. **Shared application workflow (implemented):** AgentRequest/AgentResponse,
    FashionTrendAgent, concrete commands, and AgentController now replace direct
    CLI-to-repository wiring. ToolManager remains part of the future LLM milestone.
-4. **Java GUI:** Swing is a proposed dependency-free option. Support CSV selection,
-   search, analysis, discovery, comparison and history charts through the same
-   commands as CLI. Keep slow work off the UI event thread.
+4. **Java GUI (implemented):** Swing supports CSV selection, search, analysis,
+   discovery, comparison and history charts through the same commands as CLI.
+   SwingWorker runs work off the event thread and renders results back on it.
 5. **LLM agent:** LLMClient abstraction, provider implementation, validated request
    plans, allowlisted tools, evidence-grounded explanations and intelligence reports.
    Execute actual retrieval/analysis steps; do not implement a prompt-only wrapper.
@@ -35,14 +35,14 @@ the complete feature is implemented. No feature videos have been recorded yet.
 | ID | Stage 1 feature | Current status | Implemented or planned participants |
 | --- | --- | --- | --- |
 | F01 | Natural-language query | Not implemented | Planned AgentPlanner, LLMClient, ToolManager, FashionTrendAgent |
-| F02 | Search/retrieval | Backend and CLI implemented; GUI pending | TrendCLI → AgentController → Command → FashionTrendAgent → TrendRepository.findByName/getSignals → TrendSignal |
-| F03 | CSV import/normalization | Backend and CLI implemented; GUI pending | TrendCLI → AgentController → Command → FashionTrendAgent → TrendRepository.importCsv → TrendDataImporter.importData → CsvTrendAdapter → CsvReader.readRows |
-| F04 | Momentum analysis | Backend and CLI implemented; GUI pending | TrendAnalyzer.calculateMomentum, TrendAnalysis |
-| F05 | Lifecycle classification | Deterministic backend and CLI implemented; GUI/AI explanation pending | TrendAnalyzer.classifyLifecycle |
-| F06 | Emerging microtrends | Deterministic backend and CLI implemented; GUI/AI summary pending | TrendAnalyzer.detectMicrotrends, ranking strategies |
-| F07 | Category discovery | Deterministic backend and CLI implemented; GUI/AI summary pending | TrendRepository.findByCategory, TrendAnalyzer.rank |
-| F08 | Comparison | Deterministic backend and CLI implemented; GUI/AI summary pending | CompareCommand → FashionTrendAgent.compare → TrendAnalyzer.calculateMomentum per available history; warnings for missing/sparse data |
-| F09 | History/visualization | CLI history implemented; GUI chart pending | TrendCLI → AgentController → Command → FashionTrendAgent → TrendRepository.getSignals; planned TrendGUI.showHistory |
+| F02 | Search/retrieval | Backend, CLI and GUI implemented | TrendCLI → AgentController → Command → FashionTrendAgent → TrendRepository.findByName/getSignals → TrendSignal |
+| F03 | CSV import/normalization | Backend, CLI and GUI implemented | TrendCLI → AgentController → Command → FashionTrendAgent → TrendRepository.importCsv → TrendDataImporter.importData → CsvTrendAdapter → CsvReader.readRows |
+| F04 | Momentum analysis | Backend, CLI and GUI implemented | TrendAnalyzer.calculateMomentum, TrendAnalysis |
+| F05 | Lifecycle classification | Deterministic backend, CLI and GUI implemented; optional AI explanation pending | TrendAnalyzer.classifyLifecycle |
+| F06 | Emerging microtrends | Deterministic backend, CLI and GUI implemented; AI summary pending | TrendAnalyzer.detectMicrotrends, ranking strategies |
+| F07 | Category discovery | Deterministic backend, CLI and GUI implemented; AI summary pending | TrendRepository.findByCategory, TrendAnalyzer.rank |
+| F08 | Comparison | Deterministic backend, CLI and GUI implemented; AI summary pending | CompareCommand → FashionTrendAgent.compare → TrendAnalyzer.calculateMomentum per available history; warnings for missing/sparse data |
+| F09 | History/visualization | CLI history and GUI history chart implemented | TrendCLI → AgentController → Command → FashionTrendAgent → TrendRepository.getSignals; TrendGUI.display → HistoryChart.setSignals |
 | F10 | AI intelligence report | Not implemented | Planned ReportCommand, AgentPlanner, ToolManager, EvidenceBundle, TrendReport, LLMClient |
 
 Current files are under `src/main/java/fashion`: `model/TrendSignal.java`,
@@ -56,7 +56,7 @@ matches or chronologically ordered observations; it does not synthesize answers.
 | Stage 1 pattern | Current status | Design problem / roles |
 | --- | --- | --- |
 | Adapter | Implemented in data layer | TrendDataImporter is the target; CsvTrendAdapter converts CsvReader rows into TrendSignal; TrendRepository consumes the interface |
-| MVC | Pending | Planned TrendGUI view, AgentController controller, domain/repository model |
+| MVC | Implemented | TrendGUI collects input/displays responses and HistoryChart draws observations; AgentController executes commands; repository and domain records hold model state |
 | Command | Implemented | Command.execute defines the interface; AgentCommand holds request/receiver; four concrete commands invoke FashionTrendAgent; AgentController executes them |
 | Facade | Implemented for deterministic operations | FashionTrendAgent.run hides repository, analysis and ranking workflows; planning/tool/LLM coordination remains pending |
 | Strategy | Implemented in analysis layer | MomentumRankingStrategy and GrowthRankingStrategy provide interchangeable ordering through TrendRankingStrategy |
@@ -135,11 +135,26 @@ implementation decisions for F04–F08; include them in the final changes record
   unequal histories must be considered when interpreting comparisons.
 
 `./scripts/test.sh` currently runs 17 data checks, 19 analysis checks and 19 shared
-application workflow checks (55 total). CLI smoke
+application workflow checks plus 18 Swing GUI checks (73 total). CLI smoke
 checks cover sample import, history filtering, analysis, microtrend discovery and
 comparison. Synthetic data is used only to exercise actual calculations.
 
-Next implementation priority: GUI, then validated LLM planning/report generation. Those are still required for Stage 2.
+Next implementation priority: validated LLM planning/report generation (F01/F10). Those are still required for Stage 2.
 
 The [current architecture diagram](architecture.md) shows the implemented classes
 and command sequence. Stage 1 diagrams must still be reconciled with the final system.
+
+## GUI milestone
+
+`gui/TrendGUI.java` collects operation-specific inputs, constructs the same concrete
+commands as the CLI, and displays immutable AgentResponse objects. SwingWorker
+serializes operations without blocking the event thread. `gui/HistoryChart.java`
+plots actual observation dates; averaging and missing-data presentation are disclosed
+on the chart. `scripts/gui.sh` compiles and launches the desktop application.
+
+The chosen Swing toolkit is an implementation detail absent from Stage 1. The MVC
+roles match the design. One reusable operation form replaces separate screens,
+reducing duplicated controls while preserving the required workflows. GUI checks
+exercise import, search, date filtering/validation, analysis, discovery, emerging
+trends, partial comparison and read-only result tables. Native file-picker and
+window interactions still need a manual desktop/demo pass.

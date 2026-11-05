@@ -1,7 +1,7 @@
 # Implemented architecture
 
-This diagram describes current deterministic functionality, not the still-planned
-GUI or LLM integration. A shared response carries data and diagnostics so each
+This diagram describes current deterministic GUI/CLI functionality. LLM
+integration is still planned. A shared response carries data and diagnostics so each
 interface can choose its own rendering without repeating application workflows.
 
 ```mermaid
@@ -33,6 +33,11 @@ classDiagram
         <<interface>>
         +rank(analyses) List
     }
+    TrendGUI --> AgentController : submits in SwingWorker
+    TrendGUI --> Command : constructs
+    TrendGUI --> AgentResponse : renders
+    TrendGUI --> HistoryChart
+    HistoryChart --> TrendSignal : plots
     TrendCLI --> AgentController : submits
     TrendCLI --> Command : constructs
     AgentController --> Command : invokes

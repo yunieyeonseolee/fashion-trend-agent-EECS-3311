@@ -40,3 +40,16 @@ LLM integration in the application.
   responses. Human review remains pending.
 - Updated the report, feature status and current architecture diagrams. GUI and
   LLM workflows remain unimplemented; no actual LLM narrative is claimed.
+
+## November 5, 2026 — Swing GUI and history visualization
+
+- Tool: Codex; exact model metadata, token usage and cost still unavailable here.
+- User authorized continuing with the Java GUI milestone.
+- Added TrendGUI and HistoryChart, background command execution with SwingWorker,
+  CSV chooser, operation-aware fields, sortable results, visible errors and warnings,
+  and launch script. MVC now connects a real view to the existing controller/model.
+- Validation: all 73 checks passed, including 18 new headless Swing checks using
+  real controls and workers. Inspected a rendered history preview; ensured table
+  headers appear in headless rendering and numeric values have readable precision.
+- Limit: native window/file-picker interaction is not covered by headless checks;
+  a manual desktop/demo pass remains. Human review remains pending.
