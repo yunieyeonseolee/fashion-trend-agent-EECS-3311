@@ -70,3 +70,13 @@ LLM integration in the application.
   report fallback. These tests do not claim live-model execution.
 - Local .env template was created with placeholders. Live API verification and
   human narrative review remain pending. Add actual API model/usage after that check.
+
+## November 5, 2026 — user-configured live API verification
+
+- User added local credentials and asked to check whether they work.
+- Codex ran one real Ask workflow (planning and synthesis) and one real Report
+  workflow (synthesis) using gpt-6-luna. Both succeeded with grounded narratives.
+- Runtime usage: 1,735 input + 1,115 output tokens = 2,850 tokens across three calls.
+  Exact monetary charge and coding-assistant usage remain unavailable here.
+- Recorded [live verification](live-verification.md) and its limits. No code changes;
+  documentation-only commit is excluded from the weekly meaningful-code count.

@@ -13,8 +13,8 @@ The Java backend, CLI and Swing GUI implement CSV import, search/history,
 deterministic analysis, ranking, microtrend discovery and comparison through shared
 commands, AgentController and FashionTrendAgent. The GUI also plots history.
 OpenAI Responses API integration, validated natural-language plans and evidence-grounded
-reports are implemented. Live-model verification is pending local credentials; API
-tests use a local fake server. Sample observations are synthetic.
+reports are implemented. Live Ask and Report smoke tests passed with `gpt-6-luna`
+on November 5, 2026; automated API tests use a local fake server. Sample observations are synthetic.
 
 ## 2. Feature-to-implementation mapping
 
@@ -104,9 +104,16 @@ in later periods do not compensate for earlier periods.
 workflow checks, 21 Swing GUI checks and 32 LLM integration checks (108 total). Eight CLI
 smoke/error checks also passed. A malformed Java string in a CSV test fixture was
 corrected before the successful run. Current limitations include in-memory storage,
-heuristic scoring, synthetic sample data, and pending live-model verification. Headless
+heuristic scoring, synthetic sample data, and limited live-model coverage. Headless
 GUI checks exercised real controls/workers and produced an inspected preview;
 native window/file-picker interactions still require a manual desktop/demo pass.
+
+Live verification on November 5 exercised Ask planning/synthesis and Report
+synthesis successfully with `gpt-6-luna`. Three API calls reported 1,735 input and
+1,115 output tokens (2,850 total). Both narratives disclosed synthetic data and
+cited local evidence. Actual monetary cost requires provider billing; these runtime
+tokens are separate from coding-tool usage. See [verification details](docs/live-verification.md).
+No code changed, so this documentation update does not increase the weekly count.
 
 ## 7. Demonstration index
 

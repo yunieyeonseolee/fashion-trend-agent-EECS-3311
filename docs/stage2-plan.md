@@ -19,7 +19,7 @@ describes the implemented source, not a completed Stage 2 submission. See
 4. **Java GUI (implemented):** Swing supports CSV selection, search, analysis,
    discovery, comparison and history charts through the same commands as CLI.
    SwingWorker runs work off the event thread and renders results back on it.
-5. **LLM agent (implemented, live verification pending):** LLMClient abstraction, provider implementation, validated request
+5. **LLM agent (implemented, live Ask/Report smoke tests passed):** LLMClient abstraction, provider implementation, validated request
    plans, allowlisted tools, evidence-grounded explanations and intelligence reports.
    Execute actual retrieval/analysis steps; do not implement a prompt-only wrapper.
    Make model ID configurable and verify API availability. The model ID proposed in
@@ -34,16 +34,16 @@ the complete feature is implemented. No feature videos have been recorded yet.
 
 | ID | Stage 1 feature | Current status | Implemented or planned participants |
 | --- | --- | --- | --- |
-| F01 | Natural-language query | GUI/CLI and API integration implemented; live-model check pending | AnalyzeCommand → FashionTrendAgent → AgentWorkflow → AgentPlanner/LLMClient → ToolManager → evidence synthesis |
+| F01 | Natural-language query | GUI/CLI and API integration implemented; live Ask/Report smoke tests passed | AnalyzeCommand → FashionTrendAgent → AgentWorkflow → AgentPlanner/LLMClient → ToolManager → evidence synthesis |
 | F02 | Search/retrieval | Backend, CLI and GUI implemented | TrendCLI → AgentController → Command → FashionTrendAgent → TrendRepository.findByName/getSignals → TrendSignal |
 | F03 | CSV import/normalization | Backend, CLI and GUI implemented | TrendCLI → AgentController → Command → FashionTrendAgent → TrendRepository.importCsv → TrendDataImporter.importData → CsvTrendAdapter → CsvReader.readRows |
 | F04 | Momentum analysis | Backend, CLI and GUI implemented | TrendAnalyzer.calculateMomentum, TrendAnalysis |
-| F05 | Lifecycle classification | Deterministic backend, CLI and GUI implemented; AI explanation available through Ask/Report; live check pending | TrendAnalyzer.classifyLifecycle |
-| F06 | Emerging microtrends | Deterministic backend, CLI and GUI implemented; AI summary available through Ask/Report; live check pending | TrendAnalyzer.detectMicrotrends, ranking strategies |
-| F07 | Category discovery | Deterministic backend, CLI and GUI implemented; AI summary available through Ask/Report; live check pending | TrendRepository.findByCategory, TrendAnalyzer.rank |
-| F08 | Comparison | Deterministic backend, CLI and GUI implemented; AI summary available through Ask/Report; live check pending | CompareCommand → FashionTrendAgent.compare → TrendAnalyzer.calculateMomentum per available history; warnings for missing/sparse data |
+| F05 | Lifecycle classification | Deterministic backend, CLI and GUI implemented; AI explanation available through Ask/Report; live Ask/Report smoke tests passed | TrendAnalyzer.classifyLifecycle |
+| F06 | Emerging microtrends | Deterministic backend, CLI and GUI implemented; AI summary available through Ask/Report; live Ask/Report smoke tests passed | TrendAnalyzer.detectMicrotrends, ranking strategies |
+| F07 | Category discovery | Deterministic backend, CLI and GUI implemented; AI summary available through Ask/Report; live Ask/Report smoke tests passed | TrendRepository.findByCategory, TrendAnalyzer.rank |
+| F08 | Comparison | Deterministic backend, CLI and GUI implemented; AI summary available through Ask/Report; live Ask/Report smoke tests passed | CompareCommand → FashionTrendAgent.compare → TrendAnalyzer.calculateMomentum per available history; warnings for missing/sparse data |
 | F09 | History/visualization | CLI history and GUI history chart implemented | TrendCLI → AgentController → Command → FashionTrendAgent → TrendRepository.getSignals; TrendGUI.display → HistoryChart.setSignals |
-| F10 | AI intelligence report | GUI/CLI implemented with numeric fallback; live-model check pending | ReportCommand → FashionTrendAgent.generateReport → AgentWorkflow.generateReport → ToolManager → EvidenceBundle → LLMClient → TrendReport |
+| F10 | AI intelligence report | GUI/CLI implemented with numeric fallback; live Ask/Report smoke tests passed | ReportCommand → FashionTrendAgent.generateReport → AgentWorkflow.generateReport → ToolManager → EvidenceBundle → LLMClient → TrendReport |
 
 Current files are under `src/main/java/fashion`: `model/TrendSignal.java`,
 `data/{TrendRepository,TrendDataImporter,CsvTrendAdapter,CsvReader,ImportResult}.java`,
@@ -139,7 +139,7 @@ application workflow checks, 21 Swing GUI checks and 32 LLM integration checks (
 checks cover sample import, history filtering, analysis, microtrend discovery and
 comparison. Synthetic data is used only to exercise actual calculations.
 
-Next priority: live API verification with local credentials, GUI polish, human review, real-data selection and final report/demo preparation.
+Next priority: GUI polish, human review, real-data selection and final report/demo preparation.
 
 The [current architecture diagram](architecture.md) shows the implemented classes
 and command sequence. Stage 1 diagrams must still be reconciled with the final system.
@@ -173,12 +173,11 @@ facade compact. TrendReport retains evidence separately from AI text. Token coun
 are reported for successful replies, not estimated monetary costs.
 
 The Stage 1 model name is replaced with required local LLM_MODEL configuration:
-account/model access has not been verified. Added Gson for safe JSON handling and
+gpt-6-luna access was verified in live Ask/Report smoke tests on November 5. Added Gson for safe JSON handling and
 standard Java HttpClient for Responses API transport. No native function-calling
 protocol is claimed: structured plan output drives application-level tool selection.
 
 F05–F08 standalone commands remain deterministic; AI explanations are available by
-asking the corresponding question or requesting a report. Live-model verification
-is pending credentials. Automated tests exercise local fake API responses and do
+asking the corresponding question or requesting a report. Live Ask/Report smoke tests passed with gpt-6-luna on November 5; see [verification details](live-verification.md). Automated tests exercise local fake API responses and do
 not establish real provider availability or narrative quality. AgentPlanner's name
 catalog is limited to 200 entries; generated prose still needs human checking.

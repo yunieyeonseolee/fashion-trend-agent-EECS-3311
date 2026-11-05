@@ -9,8 +9,8 @@ The application provides CSV import/normalization (F03), trend search
 and filtered retrieval (F02), deterministic analysis and discovery/comparison (F04–F08),
 and history visualization (F09). The Swing GUI and CLI use the same shared controller
 and facade. Natural-language planning (F01) and evidence-grounded reports (F10) are
-implemented with OpenAI Responses API integration. **Live-model verification is
-pending local credentials; automated API tests use a local fake server.** See the
+implemented with OpenAI Responses API integration. **Live Ask and Report smoke tests passed with `gpt-6-luna` on November 5, 2026.**
+Automated API tests still use a local fake server. See [live verification](docs/live-verification.md). See the
 [implementation plan and feature mapping](docs/stage2-plan.md).
 
 ## Prerequisites and running

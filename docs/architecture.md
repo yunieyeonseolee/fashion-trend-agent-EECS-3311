@@ -1,7 +1,7 @@
 # Implemented architecture
 
-This diagram describes the implemented GUI/CLI and LLM integration. Live API
-verification is pending; automated API checks use a local fake server. A shared response carries data and diagnostics so each
+This diagram describes the implemented GUI/CLI and LLM integration. Live Ask/Report API
+smoke tests passed; automated API checks use a local fake server. A shared response carries data and diagnostics so each
 interface can choose its own rendering without repeating application workflows.
 
 ```mermaid
