@@ -22,7 +22,10 @@ public final class GuiTest {
         var agent = new FashionTrendAgent(new TrendRepository(path -> {
             importedOffEdt.set(!SwingUtilities.isEventDispatchThread());
             return adapter.importData(path);
-        }));
+        }), (instructions,input,schema) -> new fashion.llm.LLMClient.Reply(schema == null
+                ? "TEST ONLY: synthetic data explanation."
+                : "{\"steps\":[{\"operation\":\"ANALYZE\",\"name\":\"mary jane flats\",\"secondName\":null,\"category\":null,\"from\":null,\"to\":null,\"ranking\":\"MOMENTUM\"}],\"clarification\":\"\"}",
+                "test-only-model",10,5));
         SwingUtilities.invokeAndWait(() -> view = new TrendGUI(agent));
         onEdt(() -> check(!button("run").isEnabled(), "run disabled before import"));
         var pending = new AtomicReference<CompletableFuture<AgentResponse>>();
@@ -101,6 +104,19 @@ public final class GuiTest {
             try { javax.imageio.ImageIO.write(image,"png",Path.of("build/gui-preview.png").toFile()); }
             catch (java.io.IOException e) { throw new RuntimeException(e); }
         });
+        onEdt(() -> {
+            select("Ask"); field("trend").setText("How are Mary Jane flats doing?");
+            check(!field("category").isEnabled(), "ask uses question instead of hidden filters");
+            button("run").doClick();
+        });
+        awaitReady();
+        onEdt(() -> {
+            check(((JTextArea)find(view,"report")).getText().contains("TEST ONLY"), "AI interpretation rendered in report tab");
+            select("Report"); field("trend").setText("mary jane flats");
+            button("run").doClick();
+        });
+        awaitReady();
+        onEdt(() -> check(((JTextArea)find(view,"report")).getText().contains("DISCOVER"), "report tab includes executed tools"));
         System.out.println("Passed " + checks + " Swing GUI checks; preview: build/gui-preview.png");
     }
 

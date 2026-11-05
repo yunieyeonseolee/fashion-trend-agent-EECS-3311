@@ -14,6 +14,8 @@ public final class TrendCLI {
             Usage:
               ./scripts/run.sh import <csv>
               ./scripts/run.sh search <csv> <name-fragment>
+              ./scripts/run.sh ask <csv> "natural-language question"
+              ./scripts/run.sh report <csv> <exact-name> [category|-] [from|-] [to|-]
               ./scripts/run.sh history <csv> <exact-name> [category|-] [from|-] [to|-]
               ./scripts/run.sh analyze <csv> <exact-name> [category|-] [from|-] [to|-]
               ./scripts/run.sh discover <csv> <category> [momentum|growth]
@@ -55,8 +57,8 @@ public final class TrendCLI {
         if (args.length < 2) throw new IllegalArgumentException(USAGE);
         boolean valid = switch (args[0]) {
             case "import" -> args.length == 2;
-            case "search" -> args.length == 3;
-            case "history", "analyze" -> args.length >= 3 && args.length <= 6;
+            case "search", "ask" -> args.length == 3;
+            case "history", "analyze", "report" -> args.length >= 3 && args.length <= 6;
             case "discover", "emerging" -> args.length == 3 || args.length == 4;
             case "compare" -> args.length >= 4 && args.length <= 6;
             default -> false;
@@ -64,6 +66,8 @@ public final class TrendCLI {
         if (!valid) throw new IllegalArgumentException(USAGE);
         return switch (args[0]) {
             case "import" -> new ImportCommand(agent, AgentRequest.importCsv(Path.of(args[1])));
+            case "ask" -> new AnalyzeCommand(agent, AgentRequest.trend(ASK,args[2],null,null,null));
+            case "report" -> new ReportCommand(agent, AgentRequest.trend(REPORT,args[2],optional(args,3),date(args,4),date(args,5)));
             case "search" -> new AnalyzeCommand(agent, AgentRequest.trend(SEARCH, args[2], null, null, null));
             case "history", "analyze" -> new AnalyzeCommand(agent, AgentRequest.trend(
                     args[0].equals("history") ? HISTORY : ANALYZE, args[2], optional(args, 3), date(args, 4), date(args, 5)));
@@ -82,10 +86,13 @@ public final class TrendCLI {
     }
 
     public static void display(AgentResponse response) {
-        if (!response.success()) {
-            System.err.println("Error: " + response.message());
+        if (!response.success()) System.err.println("Error: " + response.message());
+        if (response.report() != null) {
+            response.warnings().forEach(w -> System.err.println("Warning: " + w));
+            System.out.println(response.report().render());
             return;
         }
+        if (!response.success()) return;
         if (!response.message().isEmpty()) System.out.println(response.message());
         response.warnings().forEach(w -> System.err.println("Warning: " + w));
         response.matches().forEach(System.out::println);

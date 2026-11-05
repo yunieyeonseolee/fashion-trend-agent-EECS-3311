@@ -1,6 +1,8 @@
 package fashion.application;
 
 import fashion.analysis.*;
+import fashion.agent.*;
+import fashion.llm.*;
 import fashion.data.TrendRepository;
 import fashion.model.TrendAnalysis;
 import fashion.model.TrendSignal;
@@ -9,14 +11,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Facade: coordinates storage, analysis and ranking without exposing them to views.
- * Natural-language planning and LLM explanation are future additions.
+ * Validated plans use read-only tools; numerical results remain deterministic.
  */
 public final class FashionTrendAgent {
     private final TrendRepository repository;
 
-    public FashionTrendAgent(TrendRepository repository) { this.repository = repository; }
+    private final AgentWorkflow workflow;
+    public FashionTrendAgent(TrendRepository repository) { this(repository,new OpenAILLMClient()); }
+    public FashionTrendAgent(TrendRepository repository, LLMClient llm) {
+        this.repository=repository;
+        this.workflow=new AgentWorkflow(repository,llm,new ToolManager(this,repository));
+    }
 
     public AgentResponse run(AgentRequest request) throws IOException {
+        return switch(request.operation()) {
+            case ASK -> workflow.answer(request.name());
+            case REPORT -> generateReport(request);
+            default -> runDeterministic(request);
+        };
+    }
+    public AgentResponse generateReport(AgentRequest request) throws IOException {
+        return workflow.generateReport(request);
+    }
+    public AgentResponse runDeterministic(AgentRequest request) throws IOException {
         var analyzer = new TrendAnalyzer(request.ranking() == AgentRequest.Ranking.GROWTH
                 ? new GrowthRankingStrategy() : new MomentumRankingStrategy());
         return switch (request.operation()) {
@@ -38,6 +55,7 @@ public final class FashionTrendAgent {
                     List.of(analyzer.calculateMomentum(history(request, request.name()))), List.of());
             case DISCOVER, EMERGING -> discover(request, analyzer);
             case COMPARE -> compare(request, analyzer);
+            case ASK, REPORT -> throw new IllegalArgumentException("AI operations cannot execute as deterministic tools");
         };
     }
 

@@ -19,7 +19,7 @@ public final class TrendGUI extends JPanel {
     private final FashionTrendAgent agent;
     private final AgentController controller = new AgentController();
     private final JComboBox<String> operation = named(new JComboBox<>(new String[]{
-            "Search", "History", "Analyze", "Discover", "Emerging", "Compare"}), "operation");
+            "Search", "History", "Analyze", "Discover", "Emerging", "Compare", "Ask", "Report"}), "operation");
     private final JTextField trend = named(new JTextField(18), "trend");
     private final JTextField second = named(new JTextField(18), "secondTrend");
     private final JTextField category = named(new JTextField(14), "category");
@@ -30,6 +30,8 @@ public final class TrendGUI extends JPanel {
     private final JButton importButton = named(new JButton("Import CSV…"), "import");
     private final JLabel status = named(new JLabel("Import a CSV to begin. Data lasts for this session."), "status");
     private final JTextArea details = named(new JTextArea(5, 60), "details");
+    private final JTextArea reportText = named(new JTextArea(10,60),"report");
+    private final JTabbedPane narrativeTabs = new JTabbedPane();
     private final JTable table = named(new JTable(), "results");
     private final HistoryChart chart = new HistoryChart();
     private boolean busy;
@@ -52,7 +54,7 @@ public final class TrendGUI extends JPanel {
         add(header, BorderLayout.NORTH);
 
         var form = new JPanel(new GridBagLayout());
-        String[] labels = {"Operation", "Trend / search", "Compare with", "Category", "From (YYYY-MM-DD)", "To (YYYY-MM-DD)", "Rank by"};
+        String[] labels = {"Operation", "Trend / question", "Compare with", "Category", "From (YYYY-MM-DD)", "To (YYYY-MM-DD)", "Rank by"};
         JComponent[] fields = {operation, trend, second, category, from, to, ranking};
         for (int i = 0; i < fields.length; i++) {
             var constraints = new GridBagConstraints();
@@ -95,7 +97,12 @@ public final class TrendGUI extends JPanel {
         split.setResizeWeight(0);
         split.setDividerLocation(345);
         add(split, BorderLayout.CENTER);
-        add(new JScrollPane(details), BorderLayout.SOUTH);
+        reportText.setEditable(false);
+        reportText.setLineWrap(true);
+        reportText.setWrapStyleWord(true);
+        narrativeTabs.addTab("Details",new JScrollPane(details));
+        narrativeTabs.addTab("Report / AI",new JScrollPane(reportText));
+        add(narrativeTabs, BorderLayout.SOUTH);
         importButton.addActionListener(event -> chooseCsv());
         run.addActionListener(event -> submitForm());
         operation.addActionListener(event -> updateControls());
@@ -142,9 +149,10 @@ public final class TrendGUI extends JPanel {
         if (busy) return CompletableFuture.failedFuture(new IllegalStateException("An operation is already running"));
         Command command = switch (request.operation()) {
             case IMPORT -> new ImportCommand(agent, request);
-            case SEARCH, HISTORY, ANALYZE -> new AnalyzeCommand(agent, request);
+            case SEARCH, HISTORY, ANALYZE, ASK -> new AnalyzeCommand(agent, request);
             case DISCOVER, EMERGING -> new DiscoverCommand(agent, request);
             case COMPARE -> new CompareCommand(agent, request);
+            case REPORT -> new ReportCommand(agent,request);
         };
         var completion = new CompletableFuture<AgentResponse>();
         busy = true;
@@ -181,14 +189,17 @@ public final class TrendGUI extends JPanel {
         boolean discover = op.equals("Discover") || op.equals("Emerging");
         trend.setEnabled(!busy && !discover);
         second.setEnabled(!busy && op.equals("Compare"));
-        category.setEnabled(!busy && !op.equals("Search"));
-        from.setEnabled(!busy && !op.equals("Search"));
-        to.setEnabled(!busy && !op.equals("Search"));
+        category.setEnabled(!busy && !op.equals("Search") && !op.equals("Ask"));
+        from.setEnabled(!busy && !op.equals("Search") && !op.equals("Ask"));
+        to.setEnabled(!busy && !op.equals("Search") && !op.equals("Ask"));
         ranking.setEnabled(!busy && discover);
     }
 
     public void display(AgentResponse response) {
         chart.setSignals(List.of());
+        reportText.setText(response.report() == null ? "" : response.report().render());
+        reportText.setCaretPosition(0);
+        narrativeTabs.setSelectedIndex(response.report() == null ? 0 : 1);
         var messages = new ArrayList<String>();
         if (!response.message().isEmpty()) messages.add((response.success() ? "" : "Error: ") + response.message());
         response.warnings().forEach(w -> messages.add("Warning: " + w));

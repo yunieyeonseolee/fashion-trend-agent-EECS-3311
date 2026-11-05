@@ -6,7 +6,7 @@ import static fashion.application.AgentRequest.Operation.*;
 
 public final class AnalyzeCommand extends AgentCommand {
     public AnalyzeCommand(FashionTrendAgent receiver, AgentRequest request) {
-        super(receiver, request, SEARCH, HISTORY, ANALYZE);
+        super(receiver, request, SEARCH, HISTORY, ANALYZE, ASK);
     }
     public AgentResponse execute() throws IOException { return receiver.run(request); }
 }

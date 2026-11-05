@@ -12,7 +12,9 @@ AI usage is recorded in [the collaboration log](docs/ai-collaboration.md).
 The Java backend, CLI and Swing GUI implement CSV import, search/history,
 deterministic analysis, ranking, microtrend discovery and comparison through shared
 commands, AgentController and FashionTrendAgent. The GUI also plots history.
-LLM integration, natural-language planning and AI reports remain incomplete. Sample observations are synthetic.
+OpenAI Responses API integration, validated natural-language plans and evidence-grounded
+reports are implemented. Live-model verification is pending local credentials; API
+tests use a local fake server. Sample observations are synthetic.
 
 ## 2. Feature-to-implementation mapping
 
@@ -31,15 +33,15 @@ reflect the implemented deterministic workflow.
   off the event thread and updates the view on completion. These roles match Stage 1.
 - **Command:** `Command.execute()` is the operation contract. `AgentCommand` stores
   the receiver/request; `ImportCommand`, `AnalyzeCommand`, `DiscoverCommand` and
-  `CompareCommand` validate their operation family and invoke the receiver.
+  `CompareCommand` and `ReportCommand` validate their operation family and invoke the receiver.
   `AgentController.execute()` runs any command and translates expected I/O/request
   failures into shared responses. This removes interface-specific workflow branching
   from business logic and follows the Stage 1 command roles.
 - **Facade:** `FashionTrendAgent.run()` coordinates repository access, calculations,
   ranking, sparse-data warnings and comparison results. Interface clients need one
   application receiver rather than access to each underlying component. This follows
-  the Stage 1 facade role for deterministic operations; planner, tool manager and
-  LLM orchestration are still pending.
+  the Stage 1 facade role; AgentWorkflow now coordinates AgentPlanner, ToolManager
+  and LLMClient behind that facade. Numeric evidence remains independent of AI prose.
 - Adapter and Strategy are implemented as detailed in the feature/implementation
   plan. Expand their full participating-class descriptions in the final report.
 
@@ -51,10 +53,20 @@ The initial direct CLI-to-repository wiring has been replaced with the Stage 1
 controller/command/facade chain. AgentResponse now carries immutable matches,
 observations, analyses and diagnostics. F08 returns partial evidence when one trend
 is missing instead of discarding available results; ambiguous categories remain an
-explicit error. ToolManager is still deferred to the LLM integration milestone. Swing was chosen
+explicit error. ToolManager now restricts agent steps to read-only deterministic operations. Swing was chosen
 for a dependency-free desktop GUI; a reusable operation form provides the planned
 GUI functionality through shared commands. History uses observed points, leaving
 unobserved periods empty rather than implying interpolated measurements.
+
+F01 requests a typed plan from the model and validates all steps before invoking
+local tools. F10 uses a fixed history/analysis/category plan, avoiding an unnecessary
+planning call. AgentWorkflow separates orchestration from the facade; EvidenceBundle
+and TrendReport retain auditable tool results and sources. The model ID proposed in
+Stage 1 becomes a required local configuration value because account availability
+has not been established. Gson is added for JSON; standard Java HttpClient calls
+OpenAI's Responses API. Oversized evidence skips synthesis with a warning, and API
+failures preserve deterministic reports. Standalone F05–F08 commands stay deterministic;
+users request their AI explanations through Ask/Report.
 
 ## 5. AI tools and collaboration log
 
@@ -88,10 +100,10 @@ in later periods do not compensate for earlier periods.
 ### Verification and limitations
 
 `./scripts/test.sh` passes 17 data-layer checks, 19 analysis checks and 19 application
-workflow checks plus 18 Swing GUI checks (73 total). Eight CLI
+workflow checks, 21 Swing GUI checks and 32 LLM integration checks (108 total). Eight CLI
 smoke/error checks also passed. A malformed Java string in a CSV test fixture was
 corrected before the successful run. Current limitations include in-memory storage,
-heuristic scoring, synthetic sample data, and incomplete LLM workflows. Headless
+heuristic scoring, synthetic sample data, and pending live-model verification. Headless
 GUI checks exercised real controls/workers and produced an inspected preview;
 native window/file-picker interactions still require a manual desktop/demo pass.
 

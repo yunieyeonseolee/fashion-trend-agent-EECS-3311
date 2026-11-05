@@ -53,3 +53,20 @@ LLM integration in the application.
   headers appear in headless rendering and numeric values have readable precision.
 - Limit: native window/file-picker interaction is not covered by headless checks;
   a manual desktop/demo pass remains. Human review remains pending.
+
+## November 5, 2026 — LLM integration and evidence-grounded reports
+
+- Tool: Codex with OpenAI Docs skill; exact coding model metadata, tokens and cost
+  remain unavailable. Runtime API usage is distinct from AI coding-tool usage.
+- User authorized LLM work and said they would configure the API key locally.
+- Consulted official OpenAI Structured Outputs documentation and Gson's upstream
+  release. Added a configurable Responses API client, local credential loading,
+  strict plan validation, read-only tools, evidence bundles and separate report prose.
+- GUI and CLI now expose Ask/Report. Missing credentials preserve numeric reports;
+  planning failures return explicit errors. No real key is committed or logged.
+- Tests: 108 checks passed, including 32 local fake API/agent checks and 21 Swing
+  checks. Tested transport schema/auth, malformed/incomplete/refused responses,
+  invalid tools/names/dates, step limits, clarification, real local calculations and
+  report fallback. These tests do not claim live-model execution.
+- Local .env template was created with placeholders. Live API verification and
+  human narrative review remain pending. Add actual API model/usage after that check.

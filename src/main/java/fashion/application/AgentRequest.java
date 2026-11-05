@@ -7,7 +7,7 @@ import java.util.Objects;
 /** Interface-independent input. Invalid requests are rejected before any work runs. */
 public record AgentRequest(Operation operation, Path csv, String name, String secondName,
                            String category, LocalDate from, LocalDate to, Ranking ranking) {
-    public enum Operation { IMPORT, SEARCH, HISTORY, ANALYZE, DISCOVER, EMERGING, COMPARE }
+    public enum Operation { IMPORT, SEARCH, HISTORY, ANALYZE, DISCOVER, EMERGING, COMPARE, ASK, REPORT }
     public enum Ranking { MOMENTUM, GROWTH }
 
     public AgentRequest {
@@ -19,7 +19,7 @@ public record AgentRequest(Operation operation, Path csv, String name, String se
             case IMPORT -> {
                 if (csv == null) throw new IllegalArgumentException("CSV path is required");
             }
-            case SEARCH, HISTORY, ANALYZE -> requireText(name, "Trend name or search query");
+            case SEARCH, HISTORY, ANALYZE, ASK, REPORT -> requireText(name, "Trend name or search query");
             case COMPARE -> {
                 requireText(name, "First trend name");
                 requireText(secondName, "Second trend name");

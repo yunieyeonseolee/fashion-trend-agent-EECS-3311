@@ -7,7 +7,11 @@ import java.util.List;
 /** Common immutable output for CLI, GUI and later evidence-grounded explanations. */
 public record AgentResponse(boolean success, String message, List<String> matches,
                             List<TrendSignal> signals, List<TrendAnalysis> analyses,
-                            List<String> warnings) {
+                            List<String> warnings, fashion.agent.TrendReport report) {
+    public AgentResponse(boolean success, String message, List<String> matches,
+                         List<TrendSignal> signals, List<TrendAnalysis> analyses, List<String> warnings) {
+        this(success,message,matches,signals,analyses,warnings,null);
+    }
     public AgentResponse {
         matches = List.copyOf(matches);
         signals = List.copyOf(signals);
