@@ -2,7 +2,8 @@
 
 Based on the Stage 1 report in this repository and the supplied Stage 2 instruction
 PDF. This is a working plan, not the final implementation report. Status below
-describes local source changes, not a completed or pushed submission.
+describes the implemented source, not a completed Stage 2 submission. See
+[weekly commits](weekly-commits.md) for pushed milestones.
 
 ## Build order
 
@@ -12,9 +13,9 @@ describes local source changes, not a completed or pushed submission.
    ranking, microtrend detection, and comparison. Define formulas, minimum history,
    zero-baseline handling, irregular dates, and aggregation of multiple sources before
    coding. Test known rising/falling/flat series and inadequate histories.
-3. **Shared application workflow:** AgentRequest/AgentResponse, ToolManager,
-   FashionTrendAgent, concrete commands, and AgentController. Move the temporary
-   direct CLI-to-repository wiring into the designed shared workflow.
+3. **Shared application workflow (implemented):** AgentRequest/AgentResponse,
+   FashionTrendAgent, concrete commands, and AgentController now replace direct
+   CLI-to-repository wiring. ToolManager remains part of the future LLM milestone.
 4. **Java GUI:** Swing is a proposed dependency-free option. Support CSV selection,
    search, analysis, discovery, comparison and history charts through the same
    commands as CLI. Keep slow work off the UI event thread.
@@ -34,14 +35,14 @@ the complete feature is implemented. No feature videos have been recorded yet.
 | ID | Stage 1 feature | Current status | Implemented or planned participants |
 | --- | --- | --- | --- |
 | F01 | Natural-language query | Not implemented | Planned AgentPlanner, LLMClient, ToolManager, FashionTrendAgent |
-| F02 | Search/retrieval | Backend and CLI implemented; GUI pending | TrendCLI.main → TrendRepository.findByName/getSignals → TrendSignal |
-| F03 | CSV import/normalization | Backend and CLI implemented; GUI pending | TrendCLI.main → TrendRepository.importCsv → TrendDataImporter.importData → CsvTrendAdapter → CsvReader.readRows |
+| F02 | Search/retrieval | Backend and CLI implemented; GUI pending | TrendCLI → AgentController → Command → FashionTrendAgent → TrendRepository.findByName/getSignals → TrendSignal |
+| F03 | CSV import/normalization | Backend and CLI implemented; GUI pending | TrendCLI → AgentController → Command → FashionTrendAgent → TrendRepository.importCsv → TrendDataImporter.importData → CsvTrendAdapter → CsvReader.readRows |
 | F04 | Momentum analysis | Backend and CLI implemented; GUI pending | TrendAnalyzer.calculateMomentum, TrendAnalysis |
 | F05 | Lifecycle classification | Deterministic backend and CLI implemented; GUI/AI explanation pending | TrendAnalyzer.classifyLifecycle |
 | F06 | Emerging microtrends | Deterministic backend and CLI implemented; GUI/AI summary pending | TrendAnalyzer.detectMicrotrends, ranking strategies |
 | F07 | Category discovery | Deterministic backend and CLI implemented; GUI/AI summary pending | TrendRepository.findByCategory, TrendAnalyzer.rank |
-| F08 | Comparison | Deterministic backend and CLI implemented; GUI/AI summary pending | TrendAnalyzer.compare; same metrics applied to each history |
-| F09 | History/visualization | CLI history implemented; GUI chart pending | TrendCLI.main → TrendRepository.getSignals; planned TrendGUI.showHistory |
+| F08 | Comparison | Deterministic backend and CLI implemented; GUI/AI summary pending | CompareCommand → FashionTrendAgent.compare → TrendAnalyzer.calculateMomentum per available history; warnings for missing/sparse data |
+| F09 | History/visualization | CLI history implemented; GUI chart pending | TrendCLI → AgentController → Command → FashionTrendAgent → TrendRepository.getSignals; planned TrendGUI.showHistory |
 | F10 | AI intelligence report | Not implemented | Planned ReportCommand, AgentPlanner, ToolManager, EvidenceBundle, TrendReport, LLMClient |
 
 Current files are under `src/main/java/fashion`: `model/TrendSignal.java`,
@@ -56,8 +57,8 @@ matches or chronologically ordered observations; it does not synthesize answers.
 | --- | --- | --- |
 | Adapter | Implemented in data layer | TrendDataImporter is the target; CsvTrendAdapter converts CsvReader rows into TrendSignal; TrendRepository consumes the interface |
 | MVC | Pending | Planned TrendGUI view, AgentController controller, domain/repository model |
-| Command | Pending | Planned GUI/CLI commands share receiver workflows |
-| Facade | Pending | Planned FashionTrendAgent hides planning/tool/LLM coordination |
+| Command | Implemented | Command.execute defines the interface; AgentCommand holds request/receiver; four concrete commands invoke FashionTrendAgent; AgentController executes them |
+| Facade | Implemented for deterministic operations | FashionTrendAgent.run hides repository, analysis and ranking workflows; planning/tool/LLM coordination remains pending |
 | Strategy | Implemented in analysis layer | MomentumRankingStrategy and GrowthRankingStrategy provide interchangeable ordering through TrendRankingStrategy |
 
 Do not count planned patterns as implemented. The completed application must use
@@ -70,7 +71,7 @@ at least five distinct course patterns meaningfully.
 | Java confirmed by instructor reminder; Stage 1 omits build tooling | JDK 17+ with shell build/test scripts | Small reproducible foundation without third-party dependencies | README provides commands; JDK 21 used locally |
 | CSV conversion and warnings | Added ImportResult value object | Returns accepted observations and diagnostics together | F03, repository/adapter API; update final UML |
 | Stored local observations, persistence unspecified | In-memory repository; reload CSV per invocation | Establish validated data pipeline first | No cross-process persistence; disclose this in demos/report |
-| CLI → controller → command → facade → tools → repository | Temporary direct CLI → repository | Exercise the data layer before orchestration exists | Intermediate state only; complete shared architecture before submission |
+| CLI → controller → command → facade → tools → repository | Shared controller, commands and facade now implemented; facade currently calls repository/analyzer directly | Reuse deterministic workflows across interfaces before adding LLM tools | F02–F09 use AgentRequest/AgentResponse; ToolManager and planner still pending |
 | Normalized CSV values, scale unspecified | Explicit 0–100 popularity input contract | Prevent incomparable or non-finite inputs | Dataset must supply that scale; no automatic rescaling |
 | CSV format unspecified beyond columns | One record per physical line | Keeps row diagnostics precise in first importer | Embedded newlines unsupported; quoted commas/quotes supported |
 
@@ -133,9 +134,12 @@ implementation decisions for F04–F08; include them in the final changes record
   does not interpolate missing observations or enforce identical observation dates;
   unequal histories must be considered when interpreting comparisons.
 
-`./scripts/test.sh` currently runs 17 data checks and 19 analysis checks. CLI smoke
+`./scripts/test.sh` currently runs 17 data checks, 19 analysis checks and 19 shared
+application workflow checks (55 total). CLI smoke
 checks cover sample import, history filtering, analysis, microtrend discovery and
 comparison. Synthetic data is used only to exercise actual calculations.
 
-Next implementation priority: shared Command/Facade/controller workflow, then GUI
-and validated LLM planning/report generation. Those are still required for Stage 2.
+Next implementation priority: GUI, then validated LLM planning/report generation. Those are still required for Stage 2.
+
+The [current architecture diagram](architecture.md) shows the implemented classes
+and command sequence. Stage 1 diagrams must still be reconciled with the final system.

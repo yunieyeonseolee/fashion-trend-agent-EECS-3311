@@ -1,16 +1,14 @@
 package fashion.cli;
 
-import fashion.data.CsvReader;
-import fashion.data.CsvTrendAdapter;
-import fashion.data.TrendRepository;
-import fashion.analysis.*;
+import fashion.application.*;
+import fashion.command.*;
+import fashion.data.*;
 import fashion.model.TrendAnalysis;
-import java.util.ArrayList;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import static fashion.application.AgentRequest.Operation.*;
 
-/** Initial data-layer CLI. Command/controller wiring follows in the next milestone. */
+/** CLI boundary: parses input, submits shared commands and renders shared output. */
 public final class TrendCLI {
     private static final String USAGE = """
             Usage:
@@ -31,71 +29,72 @@ public final class TrendCLI {
             return;
         }
         try {
-            String operation = args[0];
-            boolean valid = switch (operation) {
-                case "import" -> args.length == 2;
-                case "search" -> args.length == 3;
-                case "history", "analyze" -> args.length >= 3 && args.length <= 6;
-                case "discover", "emerging" -> args.length == 3 || args.length == 4;
-                case "compare" -> args.length >= 4 && args.length <= 6;
-                default -> false;
-            };
-            if (!valid) throw new IllegalArgumentException(USAGE);
-            var repository = new TrendRepository(new CsvTrendAdapter(new CsvReader()));
-            var result = repository.importCsv(Path.of(args[1]));
-            result.warnings().forEach(w -> System.err.println("Warning: " + w));
-            var analyzer = new TrendAnalyzer(new MomentumRankingStrategy());
-            switch (operation) {
-                case "import" -> System.out.printf("Imported %d observations; %d warnings.%n",
-                        result.signals().size(), result.warnings().size());
-                case "search" -> {
-                    var names = repository.findByName(args[2]);
-                    if (names.isEmpty()) System.out.println("No matching trends.");
-                    names.forEach(System.out::println);
+            var agent = new FashionTrendAgent(new TrendRepository(new CsvTrendAdapter(new CsvReader())));
+            var controller = new AgentController();
+            // Parse and validate everything before importing or executing an operation.
+            Command command = parseCommand(args, agent);
+            if (!args[0].equals("import")) {
+                var imported = controller.execute(new ImportCommand(agent, AgentRequest.importCsv(Path.of(args[1]))));
+                if (!imported.success()) {
+                    display(imported);
+                    System.exit(1);
+                    return;
                 }
-                case "history" -> {
-                    var history = repository.getSignals(args[2], optional(args, 3),
-                            date(args, 4), date(args, 5));
-                    if (history.isEmpty()) System.out.println("No observations match this trend and date range.");
-                    else {
-                        System.out.println("date\ttrend\tcategory\tpopularity\tsource");
-                        history.forEach(s -> System.out.printf(java.util.Locale.ROOT, "%s\t%s\t%s\t%.2f\t%s%n",
-                                s.date(), s.trend(), s.category(), s.popularity(), s.source()));
-                    }
-                }
-                case "analyze" -> showAnalysis(analyzer.calculateMomentum(repository.getSignals(
-                        args[2], optional(args, 3), date(args, 4), date(args, 5))));
-                case "discover", "emerging" -> {
-                    String ranking = args.length == 4 ? args[3] : "momentum";
-                    TrendRankingStrategy strategy = switch (ranking) {
-                        case "momentum" -> new MomentumRankingStrategy();
-                        case "growth" -> new GrowthRankingStrategy();
-                        default -> throw new IllegalArgumentException("Ranking must be momentum or growth");
-                    };
-                    analyzer = new TrendAnalyzer(strategy);
-                    var names = repository.findByCategory(args[2]);
-                    if (names.isEmpty()) throw new IllegalArgumentException("No data for category. Available: "
-                            + String.join(", ", repository.categories()));
-                    var analyses = new ArrayList<TrendAnalysis>();
-                    for (var name : names) {
-                        var analysis = analyzer.calculateMomentum(repository.getSignals(name, args[2], null, null));
-                        if (analysis.reliable()) analyses.add(analysis);
-                        else System.err.println("Warning: excluded " + name + ": " + analysis.limitation());
-                    }
-                    var ranked = operation.equals("emerging") ? analyzer.detectMicrotrends(analyses) : analyzer.rank(analyses);
-                    if (ranked.isEmpty()) System.out.println("No qualifying trends with sufficient history.");
-                    ranked.forEach(TrendCLI::showAnalysis);
-                }
-                case "compare" -> {
-                    var left = repository.getSignals(args[2], null, date(args, 4), date(args, 5));
-                    var right = repository.getSignals(args[3], null, date(args, 4), date(args, 5));
-                    analyzer.compare(left, right).forEach(TrendCLI::showAnalysis);
-                }
+                imported.warnings().forEach(w -> System.err.println("Warning: " + w));
             }
-        } catch (IOException | IllegalArgumentException | java.time.DateTimeException e) {
+            var response = controller.execute(command);
+            display(response);
+            if (!response.success()) System.exit(1);
+        } catch (IllegalArgumentException | java.time.DateTimeException e) {
             System.err.println("Error: " + e.getMessage());
             System.exit(1);
         }
+    }
+
+    public static Command parseCommand(String[] args, FashionTrendAgent agent) {
+        if (args.length < 2) throw new IllegalArgumentException(USAGE);
+        boolean valid = switch (args[0]) {
+            case "import" -> args.length == 2;
+            case "search" -> args.length == 3;
+            case "history", "analyze" -> args.length >= 3 && args.length <= 6;
+            case "discover", "emerging" -> args.length == 3 || args.length == 4;
+            case "compare" -> args.length >= 4 && args.length <= 6;
+            default -> false;
+        };
+        if (!valid) throw new IllegalArgumentException(USAGE);
+        return switch (args[0]) {
+            case "import" -> new ImportCommand(agent, AgentRequest.importCsv(Path.of(args[1])));
+            case "search" -> new AnalyzeCommand(agent, AgentRequest.trend(SEARCH, args[2], null, null, null));
+            case "history", "analyze" -> new AnalyzeCommand(agent, AgentRequest.trend(
+                    args[0].equals("history") ? HISTORY : ANALYZE, args[2], optional(args, 3), date(args, 4), date(args, 5)));
+            case "discover", "emerging" -> {
+                String ranking = args.length == 4 ? args[3] : "momentum";
+                var strategy = switch (ranking) {
+                    case "momentum" -> AgentRequest.Ranking.MOMENTUM;
+                    case "growth" -> AgentRequest.Ranking.GROWTH;
+                    default -> throw new IllegalArgumentException("Ranking must be momentum or growth");
+                };
+                yield new DiscoverCommand(agent, AgentRequest.discover(args[2], args[0].equals("emerging"), strategy));
+            }
+            case "compare" -> new CompareCommand(agent, AgentRequest.compare(args[2], args[3], date(args, 4), date(args, 5)));
+            default -> throw new IllegalArgumentException(USAGE);
+        };
+    }
+
+    public static void display(AgentResponse response) {
+        if (!response.success()) {
+            System.err.println("Error: " + response.message());
+            return;
+        }
+        if (!response.message().isEmpty()) System.out.println(response.message());
+        response.warnings().forEach(w -> System.err.println("Warning: " + w));
+        response.matches().forEach(System.out::println);
+        if (!response.signals().isEmpty()) {
+            System.out.println("date\ttrend\tcategory\tpopularity\tsource");
+            response.signals().forEach(s -> System.out.printf(java.util.Locale.ROOT, "%s\t%s\t%s\t%.2f\t%s%n",
+                    s.date(), s.trend(), s.category(), s.popularity(), s.source()));
+        }
+        response.analyses().forEach(TrendCLI::showAnalysis);
     }
 
     private static void showAnalysis(TrendAnalysis a) {

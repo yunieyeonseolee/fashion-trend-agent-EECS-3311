@@ -26,3 +26,17 @@ LLM integration in the application.
 - Verification outcome: 17 data-layer checks and 19 analysis checks passed. The first
   test compile revealed an incorrectly escaped triple quote in a CSV fixture; fixed
   the fixture before rerunning. Live CLI sample operations also passed.
+
+## November 5, 2026 — shared application workflow
+
+- Tool: Codex; exact model metadata, token usage and cost still unavailable here.
+- User instruction: continue implementation and maintain report/weekly commit records.
+- Implemented AgentRequest, AgentResponse, AgentController, FashionTrendAgent,
+  Command/AgentCommand and four concrete commands. Refactored CLI into request parsing,
+  command submission and response display. Added partial comparisons with diagnostics.
+- Verification: 19 new application checks plus the existing 36 checks passed; 8 CLI
+  smoke/error checks passed. Verified equivalent direct/CLI requests, persistent
+  session state, failed-import preservation, partial/sparse comparisons, and immutable
+  responses. Human review remains pending.
+- Updated the report, feature status and current architecture diagrams. GUI and
+  LLM workflows remain unimplemented; no actual LLM narrative is claimed.

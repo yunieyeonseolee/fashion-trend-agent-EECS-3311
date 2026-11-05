@@ -7,8 +7,8 @@ Stage 2 is due November 10, 2026.
 
 The first runnable milestone provides CSV import/normalization (F03), trend search
 and filtered retrieval (F02), deterministic analysis and discovery/comparison (F04–F08),
-and the CLI portion of history (F09). The GUI, shared command/controller workflow,
-agent planning and LLM integration are **not implemented yet**. See the
+and the CLI portion of history (F09). Commands now run through a shared controller
+and facade. The GUI, agent planning and LLM integration are **not implemented yet**. See the
 [implementation plan and feature mapping](docs/stage2-plan.md).
 
 ## Prerequisites and running
@@ -54,6 +54,18 @@ unreadable files, or zero valid observations fail the import. Blank lines are ig
 `data/sample-trends.csv` is **synthetic test data**, not measured fashion evidence.
 Do not describe its calculated results as real-world trend findings. A future real
 dataset must use a documented comparable popularity scale.
+
+## Shared application workflow
+
+The CLI parses input into `AgentRequest`, constructs an `ImportCommand`,
+`AnalyzeCommand`, `DiscoverCommand` or `CompareCommand`, and submits it through
+`AgentController`. The command delegates to `FashionTrendAgent`, which coordinates
+repository access, analysis and ranking. Every operation returns an immutable
+`AgentResponse` suitable for both CLI rendering and the upcoming GUI. Expected
+import/request failures become error responses. Comparison preserves available
+results and includes warnings when one trend lacks data.
+
+See the [current architecture diagram](docs/architecture.md).
 
 ## Analysis interpretation
 
