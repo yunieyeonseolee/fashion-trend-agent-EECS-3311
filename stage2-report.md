@@ -7,7 +7,7 @@ Author: Yeonseo Lee. Prepared: November 6, 2026. Submission deadline: November 1
 **REVIEW DRAFT — not ready for final submission.** Application functionality is implemented and basic verification has passed. Demonstration videos, exact coding-tool model/usage/cost records, student review and a manual desktop check are still pending. These items are explicitly identified below; no unavailable evidence is claimed.
 
 Repository: [fashion-trend-agent-EECS-3311](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311).
-Implementation baseline: [0c6efff](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/0c6efff273b328f5fd621086d41064086365a8cc).
+Implementation baseline: [5c51f96](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/5c51f96138cdf4c33d0c0beb9795ddc37aa5f98f).
 
 ## 1. Project overview and implementation status
 
@@ -231,7 +231,7 @@ reporting periods were missed; no retrospective activity is claimed.
 | --- | --- | --- | --- |
 | October 20–26, 2026 | 5 | 0 | Missed |
 | October 27–November 2, 2026 | 5 | 0 | Missed |
-| November 3–9, 2026 | 5 | 5 | Minimum met |
+| November 3–9, 2026 | 5 | 6 | Minimum met |
 
 | Date | Code commit | Implementation and verification |
 | --- | --- | --- |
@@ -240,6 +240,7 @@ reporting periods were missed; no retrospective activity is claimed.
 | November 5, 2026 | [c833d11 — Add Swing GUI with shared workflows and trend history chart](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/c833d112f72da0f95d885efe233a824d8b9b0464) | Swing GUI uses shared commands; background execution, results/errors and history chart. Passed 73 checks including 18 Swing checks; preview inspected. Native desktop pass pending. Pushed to origin/main November 5. |
 | November 5, 2026 | [9f28aa9 — Integrate validated LLM plans and evidence-grounded trend reports](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/9f28aa974a7c0f915913e42242896c5ecd945dbc) | LLM planning/tools, evidence reports and GUI/CLI integration. Passed 108 checks and 8 CLI regressions. API tests are offline/local-fake; live-model verification pending. Pushed to origin/main November 5. |
 | November 6, 2026 | [0c6efff — Add selected-trend navigation and safe report export to GUI](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/0c6efff273b328f5fd621086d41064086365a8cc) | Selected-trend navigation and report export with overwrite protection and fallback evidence. Passed 128 checks including 37 Swing and 4 export checks. Pushed to origin/main November 6. |
+| November 6, 2026 | [5c51f96 — Polish Swing dashboard with selected-trend summaries and accessible controls](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/5c51f96138cdf4c33d0c0beb9795ddc37aa5f98f) | Dashboard summary cards follow sorted selections and clear on errors; accessible scrolling controls and progress feedback. Passed 132 checks including 41 Swing checks; previews inspected. Pushed to origin/main November 6. |
 
 Documentation-only commits are excluded from these counts. The detailed ongoing
 record is [docs/weekly-commits.md](docs/weekly-commits.md). The assignment specifies
@@ -248,7 +249,9 @@ in later periods do not compensate for earlier periods.
 
 ### Verification performed
 
-The current automated suite runs **128 checks**: 17 data-layer, 19 analysis, 19 shared workflow, 37 Swing GUI, 32 LLM integration, and 4 report export checks. Run `./scripts/test.sh`. Eight additional CLI smoke/error checks were run during integration. Tests verify malformed CSV/date/value handling, exact deduplication, filtering, known rising/falling/flat histories, irregular intervals, zero baselines, sparse histories, strategy differences, shared responses, partial comparisons, sorted GUI selection, background execution, report export and overwrite/failure recovery.
+The GUI now includes selected-analysis summary cards, a scrolling sidebar with a fixed Run button, horizontal table scrolling and a background-work indicator. Cards show existing calculated metrics and follow sorted selections; they clear on errors.
+
+The current automated suite runs **132 checks**: 17 data-layer, 19 analysis, 19 shared workflow, 41 Swing GUI, 32 LLM integration, and 4 report export checks. Run `./scripts/test.sh`. Eight additional CLI smoke/error checks were run during integration. Tests verify malformed CSV/date/value handling, exact deduplication, filtering, known rising/falling/flat histories, irregular intervals, zero baselines, sparse histories, strategy differences, shared responses, partial comparisons, sorted GUI selection, background execution, report export and overwrite/failure recovery.
 
 API tests use a local fake HTTP server and test doubles. They cover request schema/authentication, incomplete/refused/malformed responses, invalid tool names/dates/catalog entries, step limits, clarification and numeric fallback. They do not spend credits or count as proof of real-model availability. Separately, the live Ask and Report smoke tests succeeded with actual gpt-6-luna requests on November 5. Results and usage are documented in Section 5.
 
