@@ -41,6 +41,13 @@ public final class TrendGUI extends JPanel {
     private final JTabbedPane narrativeTabs = new JTabbedPane();
     private final JTable table = named(new JTable(), "results");
     private final HistoryChart chart = new HistoryChart();
+    private final JLabel summaryTitle = named(new JLabel("Your trend workspace"), "summaryTitle");
+    private final JLabel[] metrics = {
+            named(new JLabel("—"), "popularitySummary"), named(new JLabel("—"), "growthSummary"),
+            named(new JLabel("—"), "momentumSummary"), named(new JLabel("—"), "lifecycleSummary")};
+    private final JPanel cards = new JPanel(new GridLayout(1,4,10,0));
+    private final JLabel resultCount = new JLabel("Import observations to start exploring");
+    private final JProgressBar progress = new JProgressBar();
     private boolean busy;
     private boolean imported;
 
@@ -49,7 +56,7 @@ public final class TrendGUI extends JPanel {
         setLayout(new BorderLayout(12, 12));
         setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
         var header = new JPanel(new BorderLayout(8, 8));
-        var title = new JLabel("Fashion Trend Intelligence");
+        var title = new JLabel("Fashion / Intelligence");
         title.setFont(title.getFont().deriveFont(Font.BOLD, 24));
         header.add(title, BorderLayout.NORTH);
         header.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
@@ -60,45 +67,53 @@ public final class TrendGUI extends JPanel {
         imports.add(Box.createHorizontalStrut(12));
         imports.add(status);
         header.add(imports, BorderLayout.CENTER);
-        header.add(new JLabel("Analyze imported evidence. Scores are heuristics, not forecasts. Sample data is synthetic."), BorderLayout.SOUTH);
+        header.add(new JLabel("TREND RESEARCH STUDIO    /    Imported evidence · Synthetic sample data · Heuristic scores"), BorderLayout.SOUTH);
         add(header, BorderLayout.NORTH);
 
         var form = new JPanel(new GridBagLayout());
         String[] labels = {"Operation", "Trend / question", "Compare with", "Category", "From (YYYY-MM-DD)", "To (YYYY-MM-DD)", "Rank by"};
         JComponent[] fields = {operation, trend, second, category, from, to, ranking};
         for (int i = 0; i < fields.length; i++) {
-            var constraints = new GridBagConstraints();
-            constraints.gridx = 0; constraints.gridy = i;
-            constraints.anchor = GridBagConstraints.WEST;
-            constraints.insets = new Insets(4, 4, 4, 8);
+            var c = new GridBagConstraints();
+            c.gridx = 0; c.gridy = i * 2; c.weightx = 1;
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.insets = new Insets(10, 0, 4, 0);
             var label = new JLabel(labels[i]);
             label.setLabelFor(fields[i]);
-            form.add(label, constraints);
-            constraints.gridx = 1; constraints.weightx = 1;
-            constraints.fill = GridBagConstraints.HORIZONTAL;
-            form.add(fields[i], constraints);
+            form.add(label, c);
+            c.gridy++; c.insets = new Insets(0, 0, 0, 0);
+            fields[i].setPreferredSize(new Dimension(230, 32));
+            form.add(fields[i], c);
         }
-        var constraints = new GridBagConstraints();
-        constraints.gridx = 1; constraints.gridy = fields.length;
-        constraints.anchor = GridBagConstraints.EAST;
-        constraints.insets = new Insets(12, 4, 4, 8);
-        form.add(run, constraints);
+        var c = new GridBagConstraints();
+        c.gridx = 0; c.gridy = fields.length * 2; c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL; c.insets = new Insets(18, 0, 0, 0);
+        run.setPreferredSize(new Dimension(230, 38));
+
         var inputs = new JPanel(new BorderLayout());
-        inputs.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(222,218,230)), BorderFactory.createEmptyBorder(16,12,16,12)));
+        inputs.setBorder(BorderFactory.createEmptyBorder(8,16,16,16));
         inputs.add(form, BorderLayout.NORTH);
         inputs.add(guidance, BorderLayout.CENTER);
+        var inputScroll = new JScrollPane(inputs);
+        inputScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        inputScroll.setBorder(BorderFactory.createLineBorder(new Color(229,224,235)));
+        inputScroll.setMinimumSize(new Dimension(270, 200));
+        var sidebar = new JPanel(new BorderLayout(0,10));
+        sidebar.add(inputScroll, BorderLayout.CENTER);
+        sidebar.add(run, BorderLayout.SOUTH);
+        sidebar.setMinimumSize(new Dimension(270,200));
 
         table.setAutoCreateRowSorter(true);
         table.setFillsViewportHeight(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.setRowHeight(28);
+        table.setRowHeight(36);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setShowVerticalLines(false);
         table.setGridColor(new Color(232,229,238));
         table.setSelectionBackground(new Color(230,222,247));
         table.setSelectionForeground(new Color(40,30,60));
         table.getTableHeader().setReorderingAllowed(false);
-        table.getSelectionModel().addListSelectionListener(event -> updateSelectionActions());
+        table.getSelectionModel().addListSelectionListener(event -> { updateSelectionActions(); updateSummary(); });
         table.setDefaultRenderer(Double.class, new javax.swing.table.DefaultTableCellRenderer() {
             @Override protected void setValue(Object value) {
                 setHorizontalAlignment(SwingConstants.RIGHT);
@@ -108,7 +123,23 @@ public final class TrendGUI extends JPanel {
         details.setEditable(false);
         details.setLineWrap(true);
         details.setWrapStyleWord(true);
-        var outputs = new JPanel(new BorderLayout(8, 8));
+        var outputs = new JPanel(new BorderLayout(12, 12));
+        var overview = new JPanel(new BorderLayout(0,10));
+        overview.add(summaryTitle, BorderLayout.NORTH);
+        cards.setVisible(false);
+        String[] metricNames = {"LATEST POPULARITY / 100", "SHORT GROWTH / 30 DAYS", "MOMENTUM", "LIFECYCLE"};
+        for (int i=0; i<metrics.length; i++) {
+            var card = new JPanel(new BorderLayout(0,10));
+            card.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(229,224,235)),
+                    BorderFactory.createEmptyBorder(14,12,14,12)));
+            card.add(new JLabel(metricNames[i]), BorderLayout.NORTH);
+            card.add(metrics[i], BorderLayout.CENTER);
+            cards.add(card);
+        }
+        overview.add(cards, BorderLayout.CENTER);
+        overview.add(resultCount, BorderLayout.SOUTH);
+        outputs.add(overview, BorderLayout.NORTH);
         var tableScroll = new JScrollPane(table);
         tableScroll.setColumnHeaderView(table.getTableHeader());
         var actions = new JPanel(new FlowLayout(FlowLayout.LEFT,8,6));
@@ -119,9 +150,10 @@ public final class TrendGUI extends JPanel {
         narrativeTabs.addTab("Results",results);
         narrativeTabs.addTab("History chart",chart);
         outputs.add(narrativeTabs,BorderLayout.CENTER);
-        var split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, inputs, outputs);
+        var split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sidebar, outputs);
         split.setResizeWeight(0);
-        split.setDividerLocation(380);
+        split.setDividerLocation(280);
+        split.setDividerSize(12);
         split.setBorder(BorderFactory.createEmptyBorder());
         add(split, BorderLayout.CENTER);
         reportText.setEditable(false);
@@ -130,7 +162,14 @@ public final class TrendGUI extends JPanel {
         narrativeTabs.addTab("Report / AI",new JScrollPane(reportText));
         var detailsScroll = new JScrollPane(details);
         detailsScroll.setBorder(BorderFactory.createTitledBorder("Status & notes"));
-        add(detailsScroll, BorderLayout.SOUTH);
+        var footer = new JPanel(new BorderLayout(0,6));
+        progress.setPreferredSize(new Dimension(10,3));
+        progress.setBorderPainted(false);
+        progress.setForeground(new Color(117,86,164));
+        footer.add(progress,BorderLayout.NORTH);
+        footer.add(detailsScroll,BorderLayout.CENTER);
+        details.setRows(3);
+        add(footer, BorderLayout.SOUTH);
         importButton.addActionListener(event -> chooseCsv());
         exportButton.addActionListener(event -> chooseExport());
         analyzeSelected.addActionListener(event -> useSelection("Analyze"));
@@ -150,7 +189,43 @@ public final class TrendGUI extends JPanel {
         run.setBorderPainted(false);
         details.setMargin(new Insets(8,10,8,10));
         reportText.setMargin(new Insets(16,18,16,18));
+        summaryTitle.setFont(new Font(Font.SANS_SERIF,Font.BOLD,20));
+        summaryTitle.setForeground(new Color(52,33,83));
+        for (JLabel metric : metrics) {
+            metric.setFont(new Font(Font.SANS_SERIF,Font.BOLD,22));
+            metric.setForeground(new Color(94,61,151));
+        }
+        for (Component card : cards.getComponents())
+            ((JLabel)((JPanel)card).getComponent(0)).setFont(new Font(Font.SANS_SERIF,Font.BOLD,10));
+        table.getTableHeader().setPreferredSize(new Dimension(100,34));
+        table.getTableHeader().setBackground(new Color(242,238,248));
+        resultCount.setForeground(new Color(105,96,119));
+        reportText.setText("Generate a report to see calculated evidence and an AI interpretation here.");
         updateControls();
+    }
+
+    /** Summaries follow the selected model row, so sorting never mislabels a trend. */
+    private void updateSummary() {
+        cards.setVisible(lastResponse != null && !lastResponse.analyses().isEmpty());
+        for (JLabel metric : metrics) metric.setText("—");
+        summaryTitle.setText("Your trend workspace");
+        if (lastResponse == null || !lastResponse.success()) return;
+        if (!lastResponse.analyses().isEmpty()) {
+            int row = table.getSelectedRow() < 0 ? 0 : table.convertRowIndexToModel(table.getSelectedRow());
+            if (row >= lastResponse.analyses().size()) return;
+            var analysis = lastResponse.analyses().get(row);
+            summaryTitle.setText(analysis.trend() + " · " + analysis.category());
+            metrics[0].setText(metric(analysis.latestPopularity(), ""));
+            metrics[1].setText(metric(analysis.shortGrowth(), "%"));
+            metrics[2].setText(metric(analysis.momentum(), ""));
+            metrics[3].setText(analysis.lifecycle());
+        } else if (!lastResponse.signals().isEmpty()) {
+            summaryTitle.setText(lastResponse.signals().get(0).trend() + " · History");
+        }
+    }
+
+    private static String metric(Double value, String suffix) {
+        return value == null ? "Unavailable" : String.format(java.util.Locale.ROOT,"%.1f%s",value,suffix);
     }
 
     private static void style(Component component) {
@@ -298,6 +373,8 @@ public final class TrendGUI extends JPanel {
     }
 
     private void updateControls() {
+        progress.setIndeterminate(busy);
+        run.setText(busy ? "Working…" : "Run " + operation.getSelectedItem());
         operation.setEnabled(!busy);
         importButton.setEnabled(!busy);
         run.setEnabled(!busy && imported);
@@ -321,13 +398,13 @@ public final class TrendGUI extends JPanel {
         };
         guidance.setVerticalAlignment(SwingConstants.TOP);
         guidance.setBorder(BorderFactory.createEmptyBorder(20,4,4,4));
-        guidance.setText("<html><div style='width:240px;color:#655d73'>" + hint + "</div></html>");
+        guidance.setText("<html><div style='width:170px;color:#655d73'>" + hint + "</div></html>");
     }
 
     public void display(AgentResponse response) {
         lastResponse = response;
         chart.setSignals(List.of());
-        reportText.setText(response.report() == null ? "" : response.report().render());
+        reportText.setText(response.report() == null ? "Generate a report to see calculated evidence and an AI interpretation here." : response.report().render());
         reportText.setCaretPosition(0);
         narrativeTabs.setSelectedIndex(response.report() != null ? 2 : !response.signals().isEmpty() ? 1 : 0);
         var messages = new ArrayList<String>();
@@ -344,6 +421,11 @@ public final class TrendGUI extends JPanel {
                             a.observations(), a.momentum(), a.shortGrowth(), a.longGrowth(), a.acceleration()}).toList());
             response.analyses().forEach(a -> messages.add(a.trend() + ": " + a.limitation()));
         } else setTable(new String[]{"Matching trend"}, response.matches().stream().map(n -> new Object[]{n}).toList());
+        int count = table.getRowCount();
+        resultCount.setText(!response.success() ? "Check the notes below and try again."
+                : count == 0 ? "No result rows · " + response.message()
+                : count + (count == 1 ? " result" : " results") + " · Select a row to explore its history or analysis");
+        updateSummary();
         details.setText(String.join("\n", messages));
         details.setCaretPosition(0);
         exportButton.setEnabled(!busy && response.report() != null);
@@ -361,6 +443,9 @@ public final class TrendGUI extends JPanel {
                 return Object.class;
             }
         });
+        for (int i=0; i<columns.length; i++)
+            table.getColumnModel().getColumn(i).setPreferredWidth(
+                    columns[i].contains("Trend") || columns[i].equals("Matching trend") ? 190 : 120);
     }
 
     private static String optional(JTextField field) { return field.getText().isBlank() ? null : field.getText().strip(); }
@@ -369,8 +454,21 @@ public final class TrendGUI extends JPanel {
         return value == null ? null : LocalDate.parse(value);
     }
 
+    public static void configureLookAndFeel() {
+        for (var info : UIManager.getInstalledLookAndFeels()) {
+            if (info.getName().equals("Nimbus")) {
+                try { UIManager.setLookAndFeel(info.getClassName()); }
+                catch (ReflectiveOperationException | UnsupportedLookAndFeelException ignored) {
+                    // The platform default remains usable if Nimbus is unavailable.
+                }
+                break;
+            }
+        }
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
+            configureLookAndFeel();
             var agent = new FashionTrendAgent(new TrendRepository(new CsvTrendAdapter(new CsvReader())));
             var view = new TrendGUI(agent);
             var frame = new JFrame("Fashion Trend Intelligence — EECS 3311");

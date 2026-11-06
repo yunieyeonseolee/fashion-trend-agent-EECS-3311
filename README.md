@@ -65,6 +65,11 @@ selection** or **View history** to follow that trend without retyping its name.
 These actions respect the displayed sort order and keep date filters. Search rows
 have no category; select a category manually if a name spans multiple categories.
 
+The dashboard uses a scrollable control sidebar with a fixed Run button. Analysis
+summary cards show the selected trend’s popularity, short growth, momentum and
+lifecycle; cards follow sorted selections and clear on errors. Wide tables scroll
+horizontally. A progress indicator shows background work.
+
 The workspace has separate **Results**, **History chart**, and **Report / AI** tabs.
 Warnings and errors remain visible in **Status & notes** below.
 The history chart shows date-spaced points on a 0–100 scale, averaging observations

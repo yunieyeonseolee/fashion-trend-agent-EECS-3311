@@ -108,3 +108,14 @@ LLM integration in the application.
   explicitly unknown. Application API usage remains separately recorded.
 - Student review, native GUI interaction and demonstration recordings remain
   pending; the report does not claim these have been completed.
+
+## November 6, 2026 — dashboard presentation and selected-trend summaries
+
+- User approved improving the existing Swing interface. Codex added a compact
+  scrolling sidebar with an always-accessible Run button, selected-analysis summary
+  cards, a background-work indicator, readable scrolling tables, contextual empty
+  states and built-in Nimbus styling without adding application dependencies.
+- Verification: 132 checks passed, including 41 Swing checks. New checks cover
+  calculated summary values, sorted selection and clearing stale summaries on error.
+  Analysis and history previews inspected; native desktop review remains pending.
+- Exact coding model, token usage and monetary cost remain unavailable.

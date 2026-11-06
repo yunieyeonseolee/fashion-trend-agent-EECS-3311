@@ -30,7 +30,7 @@ public final class GuiTest {
                 : "{\"steps\":[{\"operation\":\"ANALYZE\",\"name\":\"mary jane flats\",\"secondName\":null,\"category\":null,\"from\":null,\"to\":null,\"ranking\":\"MOMENTUM\"}],\"clarification\":\"\"}",
                 "test-only-model",10,5);
         });
-        SwingUtilities.invokeAndWait(() -> view = new TrendGUI(agent));
+        SwingUtilities.invokeAndWait(() -> { TrendGUI.configureLookAndFeel(); view = new TrendGUI(agent); });
         onEdt(() -> check(!button("run").isEnabled(), "run disabled before import"));
         var pending = new AtomicReference<CompletableFuture<AgentResponse>>();
         onEdt(() -> pending.set(view.importCsv(Path.of("data/sample-trends.csv"))));
@@ -59,6 +59,7 @@ public final class GuiTest {
             button("run").doClick();
             check(details().getText().startsWith("Error:"), "invalid date is visible");
             check(table().getRowCount() == 0, "stale results cleared on error");
+            check(((JLabel)find(view,"popularitySummary")).getText().equals("—"), "stale summary cleared on error");
             select("Search");
             check(!field("from").isEnabled(), "irrelevant date field disabled");
             button("run").doClick();
@@ -74,6 +75,13 @@ public final class GuiTest {
         onEdt(() -> {
             check(table().getValueAt(0,2).equals("Growing"), "lifecycle displayed");
             check(table().getColumnClass(5) == Double.class, "metrics sort numerically");
+            check(((JLabel)find(view,"popularitySummary")).getText().equals("58.0"), "analysis summary shows calculated popularity");
+            check(((JLabel)find(view,"lifecycleSummary")).getText().equals("Growing"), "analysis summary shows lifecycle");
+            view.setSize(1220,760); layout(view);
+            var preview = new BufferedImage(1220,760,BufferedImage.TYPE_INT_RGB);
+            var graphics = preview.createGraphics(); view.printAll(graphics); graphics.dispose();
+            try { javax.imageio.ImageIO.write(preview,"png",Path.of("build/gui-analysis-preview.png").toFile()); }
+            catch (java.io.IOException error) { throw new RuntimeException(error); }
             select("Compare"); field("secondTrend").setText("unknown");
             button("run").doClick();
         });
@@ -93,6 +101,10 @@ public final class GuiTest {
         awaitReady();
         onEdt(() -> {
             check(table().getRowCount()==2, "category discovery rendered");
+            table().getRowSorter().toggleSortOrder(0);
+            table().setRowSelectionInterval(0,0);
+            check(((JLabel)find(view,"summaryTitle")).getText().startsWith(table().getValueAt(0,0).toString()),
+                    "summary follows sorted selection");
             select("History"); field("category").setText("");
             button("run").doClick();
         });
