@@ -135,11 +135,11 @@ implementation decisions for F04–F08; include them in the final changes record
   unequal histories must be considered when interpreting comparisons.
 
 `./scripts/test.sh` currently runs 17 data checks, 19 analysis checks and 19 shared
-application workflow checks, 21 Swing GUI checks and 32 LLM integration checks (108 total). CLI smoke
+application workflow checks, 37 Swing GUI checks, 32 LLM integration checks and 4 report export checks (128 total). CLI smoke
 checks cover sample import, history filtering, analysis, microtrend discovery and
 comparison. Synthetic data is used only to exercise actual calculations.
 
-Next priority: GUI polish, human review, real-data selection and final report/demo preparation.
+Next priority: human review, manual desktop verification, real-data selection and final report/demo preparation.
 
 The [current architecture diagram](architecture.md) shows the implemented classes
 and command sequence. Stage 1 diagrams must still be reconciled with the final system.
@@ -181,3 +181,20 @@ F05–F08 standalone commands remain deterministic; AI explanations are availabl
 asking the corresponding question or requesting a report. Live Ask/Report smoke tests passed with gpt-6-luna on November 5; see [verification details](live-verification.md). Automated tests exercise local fake API responses and do
 not establish real provider availability or narrative quality. AgentPlanner's name
 catalog is limited to 200 entries; generated prose still needs human checking.
+
+## November 6 GUI navigation and export enhancements
+
+These extend existing features rather than inventing a new feature count:
+
+| Original feature | Implemented change | Reason | Impact |
+| --- | --- | --- | --- |
+| F02/F04/F09 search, analysis and history | Select a result and invoke Analyze selection or View history; sorted view rows are converted to model rows | Avoid retyping names and opening the wrong trend after sorting | TrendGUI.useSelection constructs the existing shared commands; MVC/Command unchanged |
+| F08 comparison | Compare with selection fills the second trend without replacing the first | Make category-discovery results usable for comparison | TrendGUI.useSelection updates inputs; CompareCommand remains the workflow |
+| F10 report (also F01 Ask result) | Save a completed report as UTF-8 text with evidence, narrative, sources, usage and warnings; never overwrite an existing file | Make evidence portable without another paid request and preserve numeric fallbacks | New ReportExporter.write; TrendGUI.exportReport runs I/O off the event thread; add export and existing-file failure to F10 demo |
+| GUI layout | Results, History chart and Report / AI tabs, contextual help and persistent status panel | Give tables, charts and narrative room without mixing their controls | View-only layout change; no analysis formulas or model prompts changed |
+
+The export is a feature enhancement within F10; it is not the course's final PDF
+implementation report. No new design pattern is claimed. Add ReportExporter and
+its relationship to the final UML. Tests verify sorted navigation, export without
+extra API calls, overwrite rejection, failure recovery, stale-export prevention,
+and numeric-fallback evidence preservation. No paid requests were made by this run.

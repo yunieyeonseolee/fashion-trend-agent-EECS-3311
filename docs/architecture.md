@@ -36,6 +36,8 @@ classDiagram
     TrendGUI --> AgentController : submits in SwingWorker
     TrendGUI --> Command : constructs
     TrendGUI --> AgentResponse : renders
+    TrendGUI --> ReportExporter : save existing report
+    ReportExporter --> AgentResponse
     TrendGUI --> HistoryChart
     HistoryChart --> TrendSignal : plots
     TrendCLI --> AgentController : submits
@@ -140,3 +142,9 @@ For a known-trend report (F10), the agent builds history, analysis and category
 retrieval steps directly; it does not need a model planning call. Failed synthesis
 leaves the calculated report available. Clarifications and invalid plans do not
 execute tools. API text never mutates repository data or numerical metrics.
+
+Result navigation uses the table's view-to-model row mapping before constructing
+existing analysis/history commands. ReportExporter writes the current immutable
+AgentResponse report and warnings as UTF-8 using CREATE_NEW; it has no LLMClient
+reference. The GUI runs export in a background worker and retains the report on a
+save failure. Export is an F10 enhancement, not a sixth pattern.

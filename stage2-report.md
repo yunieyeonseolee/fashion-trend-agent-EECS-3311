@@ -68,6 +68,15 @@ OpenAI's Responses API. Oversized evidence skips synthesis with a warning, and A
 failures preserve deterministic reports. Standalone F05–F08 commands stay deterministic;
 users request their AI explanations through Ask/Report.
 
+November 6 GUI enhancements preserve the existing feature IDs: selecting a result
+now opens F04 analysis or F09 history, or fills F08 comparison input, correctly
+accounting for table sorting. F10 (and completed F01 reports) gains UTF-8 export via
+`ReportExporter.write` and background `TrendGUI.exportReport`. Export includes
+warnings and numeric fallbacks, makes no new LLM request, and refuses to overwrite
+an existing file. The view now separates results, chart and report tabs. These
+changes improve navigation and sharing while retaining the existing MVC/Command
+workflow. They need demonstration coverage within the affected features.
+
 ## 5. AI tools and collaboration log
 
 See [AI collaboration log](docs/ai-collaboration.md). Actual model metadata, token
@@ -101,7 +110,8 @@ in later periods do not compensate for earlier periods.
 ### Verification and limitations
 
 `./scripts/test.sh` passes 17 data-layer checks, 19 analysis checks and 19 application
-workflow checks, 21 Swing GUI checks and 32 LLM integration checks (108 total). Eight CLI
+workflow checks, 37 Swing GUI checks, 32 LLM integration checks and 4 report export
+checks (128 total). Eight CLI
 smoke/error checks also passed. A malformed Java string in a CSV test fixture was
 corrected before the successful run. Current limitations include in-memory storage,
 heuristic scoring, synthetic sample data, and limited live-model coverage. Headless

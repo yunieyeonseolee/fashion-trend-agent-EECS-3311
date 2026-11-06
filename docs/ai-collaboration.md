@@ -80,3 +80,17 @@ LLM integration in the application.
   Exact monetary charge and coding-assistant usage remain unavailable here.
 - Recorded [live verification](live-verification.md) and its limits. No code changes;
   documentation-only commit is excluded from the weekly meaningful-code count.
+
+## November 6, 2026 — GUI navigation and report export
+
+- Tool: Codex; exact coding-model metadata, token count and monetary cost remain
+  unavailable here. User authorized continuing implementation and GUI improvements.
+- Added sorted-result navigation for analysis/history/comparison and background
+  UTF-8 report export. Separated workspace tabs, added operation-specific help,
+  and improved typography/spacing. No prompts or scoring formulas changed.
+- Verification: all 128 checks passed. The 37 Swing checks include new sorted-row,
+  export and recovery cases; four export checks verify numeric-fallback preservation
+  and missing-report rejection. Inspected the rendered history preview. No paid API
+  requests were made. Native desktop/file-picker validation and human review remain.
+- This is a meaningful functionality milestone; accompanying documentation-only
+  commit records its hash without increasing the weekly code count separately.

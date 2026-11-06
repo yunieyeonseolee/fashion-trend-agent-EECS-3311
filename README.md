@@ -59,7 +59,14 @@ name; Search accepts name fragments. Category discovery requires a category.
 Blank category/date fields mean no filter; dates are inclusive. Disabled fields do
 not affect requests. Choose Momentum or Growth for discovery rankings.
 
-Results appear in a sortable, read-only table; warnings and errors appear below.
+Results appear in a sortable, read-only table. Select a row and choose **Analyze
+selection** or **View history** to follow that trend without retyping its name.
+**Compare with selection** fills the second trend; enter the first and click Run.
+These actions respect the displayed sort order and keep date filters. Search rows
+have no category; select a category manually if a name spans multiple categories.
+
+The workspace has separate **Results**, **History chart**, and **Report / AI** tabs.
+Warnings and errors remain visible in **Status & notes** below.
 The history chart shows date-spaced points on a 0–100 scale, averaging observations
 on the same date without interpolating unobserved dates. If a name spans multiple
 categories, filter to one category to draw its chart. Import and analysis run on a
@@ -70,6 +77,13 @@ For **Ask**, enter a natural-language question in the Trend / question field. Fo
 **Report**, enter an exact trend name and optional category/dates. Results include a
 Report / AI tab with calculated evidence and a separate AI interpretation. `./scripts/test.sh` includes headless Swing interaction checks and writes
 an ignored preview image to `build/gui-preview.png`.
+
+After Ask or Report finishes, **Save report…** exports the current evidence,
+interpretation, sources, API usage and warnings as UTF-8 text. Numeric fallback
+reports can also be saved. Saving does not call the API again. Choose a new filename:
+existing files are never overwritten. A failed save keeps the report available for
+retry; a later non-report result disables export to prevent saving stale content.
+Native file-picker interaction still needs a manual desktop/demo check.
 
 ## CSV format
 

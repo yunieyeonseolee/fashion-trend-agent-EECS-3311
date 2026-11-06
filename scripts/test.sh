@@ -10,3 +10,4 @@ java -cp "build/test-classes${FASHION_CP_SEPARATOR}${FASHION_GSON_JAR}" fashion.
 java -cp "build/test-classes${FASHION_CP_SEPARATOR}${FASHION_GSON_JAR}" fashion.ApplicationTest
 java -Djava.awt.headless=true -cp "build/test-classes${FASHION_CP_SEPARATOR}${FASHION_GSON_JAR}" fashion.GuiTest
 java -cp "build/test-classes${FASHION_CP_SEPARATOR}${FASHION_GSON_JAR}" fashion.LLMIntegrationTest
+java -cp "build/test-classes${FASHION_CP_SEPARATOR}${FASHION_GSON_JAR}" fashion.ReportExportTest

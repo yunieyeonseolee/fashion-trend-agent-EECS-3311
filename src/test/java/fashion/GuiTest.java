@@ -18,14 +18,18 @@ public final class GuiTest {
 
     public static void main(String[] args) throws Exception {
         var importedOffEdt = new AtomicBoolean();
+        var apiCalls = new java.util.concurrent.atomic.AtomicInteger();
         var adapter = new CsvTrendAdapter(new CsvReader());
         var agent = new FashionTrendAgent(new TrendRepository(path -> {
             importedOffEdt.set(!SwingUtilities.isEventDispatchThread());
             return adapter.importData(path);
-        }), (instructions,input,schema) -> new fashion.llm.LLMClient.Reply(schema == null
+        }), (instructions,input,schema) -> {
+            apiCalls.incrementAndGet();
+            return new fashion.llm.LLMClient.Reply(schema == null
                 ? "TEST ONLY: synthetic data explanation."
                 : "{\"steps\":[{\"operation\":\"ANALYZE\",\"name\":\"mary jane flats\",\"secondName\":null,\"category\":null,\"from\":null,\"to\":null,\"ranking\":\"MOMENTUM\"}],\"clarification\":\"\"}",
-                "test-only-model",10,5));
+                "test-only-model",10,5);
+        });
         SwingUtilities.invokeAndWait(() -> view = new TrendGUI(agent));
         onEdt(() -> check(!button("run").isEnabled(), "run disabled before import"));
         var pending = new AtomicReference<CompletableFuture<AgentResponse>>();
@@ -117,6 +121,63 @@ public final class GuiTest {
         });
         awaitReady();
         onEdt(() -> check(((JTextArea)find(view,"report")).getText().contains("DISCOVER"), "report tab includes executed tools"));
+        onEdt(() -> check(button("exportReport").isEnabled(), "export enabled for generated report"));
+        Path exportDirectory = java.nio.file.Files.createTempDirectory("fashion-export-test-");
+        Path exported = exportDirectory.resolve("report.txt");
+        var saved = new AtomicReference<CompletableFuture<Path>>();
+        int callsBeforeExport = apiCalls.get();
+        try {
+            onEdt(() -> saved.set(view.exportReport(exported)));
+            saved.get().get(10,TimeUnit.SECONDS);
+            String content = java.nio.file.Files.readString(exported);
+            check(content.contains("TEST ONLY") && content.contains("synthetic-example") && content.contains("34.39"),
+                    "export preserves narrative, sources and calculated metrics");
+            check(apiCalls.get() == callsBeforeExport, "export makes no extra API request");
+            onEdt(() -> saved.set(view.exportReport(exported)));
+            try { saved.get().get(10,TimeUnit.SECONDS); throw new AssertionError("existing file overwritten"); }
+            catch (ExecutionException expected) { checks++; }
+            check(java.nio.file.Files.readString(exported).equals(content), "existing export remains unchanged");
+            onEdt(() -> check(details().getText().contains("already exists") && button("exportReport").isEnabled(),
+                    "overwrite error visible and report available for retry"));
+            onEdt(() -> saved.set(view.exportReport(exportDirectory.resolve("missing-folder/report.txt"))));
+            try { saved.get().get(10,TimeUnit.SECONDS); throw new AssertionError("missing folder accepted"); }
+            catch (ExecutionException expected) { checks++; }
+            onEdt(() -> check(button("run").isEnabled(), "failed export restores controls"));
+        } finally {
+            java.nio.file.Files.deleteIfExists(exported);
+            java.nio.file.Files.deleteIfExists(exportDirectory);
+        }
+        onEdt(() -> {
+            select("Discover"); field("category").setText("footwear");
+            button("run").doClick();
+        });
+        awaitReady();
+        onEdt(() -> {
+            check(!button("exportReport").isEnabled(), "new non-report results cannot export stale report");
+            check(!button("analyzeSelected").isEnabled(), "row actions require selection");
+            table().getRowSorter().toggleSortOrder(0);
+            table().setRowSelectionInterval(0,0);
+            check(table().getValueAt(0,0).equals("chunky sneakers"), "sorted selection uses displayed ordering");
+            check(button("analyzeSelected").isEnabled(), "row actions enabled with selection");
+            button("analyzeSelected").doClick();
+        });
+        awaitReady();
+        onEdt(() -> {
+            check(field("trend").getText().equals("chunky sneakers") && table().getValueAt(0,2).equals("Declining"),
+                    "analysis follows selected view row after sorting");
+            table().setRowSelectionInterval(0,0);
+            field("trend").setText("mary jane flats");
+            button("compareSelected").doClick();
+            check(field("secondTrend").getText().equals("chunky sneakers") && field("trend").getText().equals("mary jane flats"),
+                    "comparison fills second trend without replacing first");
+            button("historySelected").doClick();
+        });
+        awaitReady();
+        onEdt(() -> {
+            check(table().getRowCount()==4 && field("trend").getText().equals("chunky sneakers"), "history follows selected analysis row");
+            field("from").setText("invalid"); button("run").doClick();
+            check(!button("historySelected").isEnabled(), "error clears stale row actions");
+        });
         System.out.println("Passed " + checks + " Swing GUI checks; preview: build/gui-preview.png");
     }
 
