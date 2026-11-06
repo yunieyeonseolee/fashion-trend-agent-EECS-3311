@@ -1,0 +1,43 @@
+classDiagram
+ direction TB
+ class TrendGUI {
+  +submit()
+  +display()
+  +exportReport()
+ }
+ class TrendCLI {
+  +parseCommand()
+  +display()
+ }
+ class AgentController {
+  +execute()
+ }
+ class Command {
+  <<interface>>
+  +execute()
+ }
+ class AgentCommand {
+  <<abstract>>
+  #FashionTrendAgent receiver
+  #AgentRequest request
+ }
+ class FashionTrendAgent {
+  +run()
+  +runDeterministic()
+  +generateReport()
+ }
+ TrendGUI --> AgentController
+ TrendCLI --> AgentController
+ AgentController --> Command : invokes
+ Command <|.. AgentCommand
+ AgentCommand <|-- AnalyzeCommand
+ AgentCommand <|-- ImportCommand
+ AgentCommand <|-- DiscoverCommand
+ AgentCommand <|-- CompareCommand
+ AgentCommand <|-- ReportCommand
+ AgentCommand --> FashionTrendAgent : receiver
+ AgentCommand --> AgentRequest
+ FashionTrendAgent --> AgentResponse
+ TrendGUI --> HistoryChart
+ TrendGUI --> ReportExporter
+ ReportExporter --> AgentResponse

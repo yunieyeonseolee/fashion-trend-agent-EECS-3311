@@ -21,5 +21,6 @@ record that honestly and never backdate or manufacture commits.
   Keep later work separate; do not count November 10 toward the third period.
 - Keep credentials and local build artifacts out of all commits.
 
-`stage2-report.md` is a draft source; the final report still needs completion and
-export to `stage2-report.pdf` for submission.
+`stage2-report.md` and `stage2-report.pdf` are review drafts. Rebuild the PDF after
+report changes using `scripts/build-report.py` (see `docs/report-building.md`).
+Video links, student review and unavailable usage records still need attention.

@@ -1,0 +1,22 @@
+sequenceDiagram
+    actor User
+    participant View as GUI or CLI
+    participant Agent as FashionTrendAgent / AgentWorkflow
+    participant Planner as AgentPlanner
+    participant LLM as LLMClient
+    participant Tools as ToolManager
+    User->>View: fashion question
+    View->>Agent: AnalyzeCommand through controller
+    Agent->>Planner: createPlan(question)
+    Planner->>LLM: catalog + question + plan schema
+    LLM-->>Planner: typed plan or clarification
+    Planner->>Planner: validate all names, operations, dates, step count
+    Planner-->>Agent: validated plan
+    loop Each read-only step (max 4)
+        Agent->>Tools: invoke(request)
+        Tools-->>Agent: deterministic result and sources
+    end
+    Agent->>LLM: synthesize EvidenceBundle
+    LLM-->>Agent: interpretation or API failure
+    Agent-->>View: evidence + separate narrative / explicit fallback
+    View-->>User: report and warnings

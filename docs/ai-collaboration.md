@@ -94,3 +94,17 @@ LLM integration in the application.
   requests were made. Native desktop/file-picker validation and human review remain.
 - This is a meaningful functionality milestone; accompanying documentation-only
   commit records its hash without increasing the weekly code count separately.
+
+## November 6, 2026 — implementation report and demonstration preparation
+
+- Tool: Codex. Expanded the ten feature mappings, five pattern explanations,
+  implementation changes, verification records and demonstration index. Rendered
+  seven updated diagrams and a review-draft PDF; added a reproducible PDF builder
+  and a feature-by-feature demonstration/manual review guide.
+- Checked the PDF's page layout and working external links. Documentation-only
+  work does not increase the weekly implementation commit count.
+- The user does not know the exact coding model or total usage/cost. Explained
+  how to check the model selector and usage records; left unavailable figures
+  explicitly unknown. Application API usage remains separately recorded.
+- Student review, native GUI interaction and demonstration recordings remain
+  pending; the report does not claim these have been completed.

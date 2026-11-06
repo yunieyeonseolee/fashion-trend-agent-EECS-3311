@@ -1,0 +1,25 @@
+flowchart LR
+ U[User]
+ L[OpenAI LLM service]
+ subgraph APP[Java fashion trend agent]
+  F01([UC01 Natural-language question])
+  F02([UC02 Search and retrieve])
+  F03([UC03 Import CSV])
+  F04([UC04 Momentum analysis])
+  F05([UC05 Lifecycle classification])
+  F06([UC06 Emerging microtrends])
+  F07([UC07 Category discovery])
+  F08([UC08 Compare trends])
+  F09([UC09 History and chart])
+  F10([UC10 Report and export])
+ end
+ U --- F01 & F02 & F03 & F04 & F05 & F06 & F07 & F08 & F09 & F10
+ F01 --- L
+ F10 --- L
+ F05 -. includes .-> F04
+ F06 -. includes .-> F04
+ F07 -. includes .-> F04
+ F08 -. includes .-> F04
+ F10 -. includes .-> F09
+ F10 -. includes .-> F07
+ F10 -. includes .-> F04

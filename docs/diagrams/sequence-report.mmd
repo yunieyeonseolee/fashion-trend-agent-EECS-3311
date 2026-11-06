@@ -1,0 +1,32 @@
+sequenceDiagram
+ actor User
+ participant View as GUI / CLI
+ participant Controller as Controller + ReportCommand
+ participant Agent as Facade + AgentWorkflow
+ participant Tools as ToolManager
+ participant LLM as LLMClient
+ participant Export as ReportExporter
+ User->>View: Report name, optional category/dates
+ View->>Controller: execute(command)
+ Controller->>Agent: generateReport(request)
+ Agent->>Agent: resolve category and construct fixed plan
+ Agent->>Tools: HISTORY
+ Tools-->>Agent: dated observations and sources
+ Agent->>Tools: ANALYZE
+ Tools-->>Agent: deterministic metrics and lifecycle
+ Agent->>Tools: DISCOVER in same category/range
+ Tools-->>Agent: ranked category evidence
+ Agent->>LLM: synthesize EvidenceBundle
+ alt API succeeds
+  LLM-->>Agent: narrative and token usage
+ else unavailable
+  LLM-->>Agent: error
+  Agent->>Agent: retain evidence and add warning
+ end
+ Agent-->>View: AgentResponse with TrendReport
+ View-->>User: evidence, narrative or fallback
+ opt Save report in GUI
+  User->>View: select a new destination
+  View->>Export: write(response, path) in background
+  Export-->>View: created file or existing-file error
+ end

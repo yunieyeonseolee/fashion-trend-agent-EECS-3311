@@ -1,0 +1,4 @@
+# Documentation generation only; not needed to run the Java app.
+reportlab==5.1.0
+Markdown==3.11.3
+Pillow==13.0.0

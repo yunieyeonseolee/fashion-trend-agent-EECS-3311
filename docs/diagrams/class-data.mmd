@@ -1,0 +1,47 @@
+classDiagram
+ direction TB
+ class TrendRepository {
+  +importCsv()
+  +findByName()
+  +findByCategory()
+  +getSignals()
+ }
+ class TrendDataImporter {
+  <<interface>>
+  +importData()
+ }
+ class CsvTrendAdapter {
+  +importData()
+ }
+ class CsvReader {
+  +readRows()
+ }
+ class TrendSignal {
+  <<record>>
+  +String trend
+  +String category
+  +LocalDate date
+  +double popularity
+  +String source
+ }
+ class TrendAnalyzer {
+  +calculateMomentum()
+  +classifyLifecycle()
+  +detectMicrotrends()
+  +rank()
+ }
+ class TrendRankingStrategy {
+  <<interface>>
+  +rank()
+ }
+ TrendRepository --> TrendDataImporter
+ TrendDataImporter <|.. CsvTrendAdapter
+ CsvTrendAdapter --> CsvReader
+ CsvTrendAdapter --> ImportResult
+ ImportResult --> TrendSignal
+ TrendRepository --> TrendSignal
+ TrendAnalyzer --> TrendSignal
+ TrendAnalyzer --> TrendAnalysis
+ TrendAnalyzer --> TrendRankingStrategy
+ TrendRankingStrategy <|.. MomentumRankingStrategy
+ TrendRankingStrategy <|.. GrowthRankingStrategy

@@ -1,0 +1,23 @@
+sequenceDiagram
+    actor User
+    participant CLI as TrendCLI
+    participant Controller as AgentController
+    participant Command as DiscoverCommand
+    participant Agent as FashionTrendAgent
+    participant Repository as TrendRepository
+    participant Analyzer as TrendAnalyzer
+    participant Strategy as TrendRankingStrategy
+    User->>CLI: discover category, ranking
+    CLI->>Controller: execute(command)
+    Controller->>Command: execute()
+    Command->>Agent: run(request)
+    Agent->>Repository: findByCategory(category)
+    loop Each trend in category
+        Agent->>Repository: getSignals(name, category, dates)
+        Agent->>Analyzer: calculateMomentum(signals)
+    end
+    Agent->>Analyzer: rank(analyses) or detectMicrotrends(analyses)
+    Analyzer->>Strategy: rank(eligible analyses)
+    Strategy-->>Agent: ranked results through analyzer
+    Agent-->>CLI: AgentResponse through command/controller
+    CLI-->>User: results and warnings

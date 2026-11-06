@@ -168,7 +168,10 @@ own validated plan through local tools; it does not use native API function-call
 - [Implementation milestones and feature/pattern status](docs/stage2-plan.md)
 - [AI collaboration log](docs/ai-collaboration.md)
 - [Weekly commit summary](docs/weekly-commits.md)
-- [Stage 2 report draft](stage2-report.md)
+- [Stage 2 report draft (PDF)](stage2-report.pdf) and [editable source](stage2-report.md)
+- [Feature demonstration and manual review guide](docs/demo-guide.md)
+- [Rebuild the report and diagrams](docs/report-building.md)
 
-The final submission also needs `stage2-report.pdf`, updated diagrams, a weekly
-commit summary, and accessible demonstration videos for every implemented feature.
+The PDF includes updated diagrams and the weekly commit summary. It remains a
+review draft: accessible feature demonstration videos, student review and missing
+AI coding-tool usage metadata still need attention before submission.

@@ -1,0 +1,40 @@
+classDiagram
+ direction TB
+ class AgentWorkflow {
+  +answer()
+  +generateReport()
+  -execute()
+ }
+ class AgentPlanner {
+  +createPlan()
+  +parse()
+  +schema()
+ }
+ class ToolManager {
+  +invoke()
+ }
+ class LLMClient {
+  <<interface>>
+  +complete()
+ }
+ class TrendReport {
+  <<record>>
+  +EvidenceBundle evidence
+  +String narrative
+  +render()
+ }
+ FashionTrendAgent --> AgentWorkflow
+ AgentWorkflow --> AgentPlanner
+ AgentWorkflow --> ToolManager
+ AgentWorkflow --> LLMClient
+ AgentWorkflow --> TrendReport
+ AgentPlanner --> AgentPlan
+ AgentPlanner --> TrendRepository
+ AgentPlanner --> LLMClient
+ LLMClient <|.. OpenAILLMClient
+ OpenAILLMClient --> LLMConfig
+ ToolManager --> FashionTrendAgent : deterministic operations only
+ ToolManager --> TrendRepository : source labels
+ ToolManager --> EvidenceBundle : ToolResult
+ TrendReport --> EvidenceBundle
+ AgentResponse --> TrendReport
