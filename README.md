@@ -44,6 +44,25 @@ The repository currently lives in memory. Each command loads its supplied CSV;
 import does not create a persistent database. `TrendRepository` also deduplicates
 repeated imports within the same process.
 
+## Atelier — alternate fashion studio UI
+
+```bash
+./scripts/studio.sh data/sample-trends.csv
+```
+
+The new editorial interface uses ivory, charcoal, serif headings and lavender
+metric cards. Four navigation sections keep tasks explicit: **Explore** for
+search/analysis/history, **Discover** for category rankings and emerging trends,
+**Compare** for two trends, and **AI reports** for questions and reports. Import
+CSV from the sidebar. The original GUI below remains available for comparison.
+
+Search and Ask ignore category/date fields; other actions use the visible filters.
+Selected-result shortcuts open unfiltered analysis/history for that trend/category.
+AI interpretation and calculated evidence have separate tabs; report export retains
+both. Changing sections clears the displayed results and disables stale exports.
+Work runs in the background. Minimum window size is 1180×780. Headless previews
+were checked at that size and 1320×900; native desktop/file dialogs still need review.
+
 ## Desktop GUI
 
 ```bash

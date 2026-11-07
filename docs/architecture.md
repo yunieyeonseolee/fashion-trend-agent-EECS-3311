@@ -6,6 +6,15 @@ interface can choose its own rendering without repeating application workflows.
 
 ```mermaid
 classDiagram
+    class FashionStudio {
+        +showPage(name)
+        +submit(request)
+        +exportReport(path)
+    }
+    FashionStudio --> AgentController
+    FashionStudio --> AgentResponse
+    FashionStudio --> HistoryChart
+    FashionStudio --> ReportExporter
     class TrendCLI {
         +parseCommand(args, agent) Command
         +display(response)

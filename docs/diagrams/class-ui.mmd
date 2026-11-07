@@ -1,5 +1,14 @@
 classDiagram
  direction TB
+ class FashionStudio {
+  +showPage()
+  +submit()
+  +exportReport()
+ }
+ FashionStudio --> AgentController
+ FashionStudio --> AgentResponse
+ FashionStudio --> HistoryChart
+ FashionStudio --> ReportExporter
  class TrendGUI {
   +submit()
   +display()

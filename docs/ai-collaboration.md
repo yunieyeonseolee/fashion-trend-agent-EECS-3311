@@ -119,3 +119,19 @@ LLM integration in the application.
   calculated summary values, sorted selection and clearing stale summaries on error.
   Analysis and history previews inspected; native desktop review remains pending.
 - Exact coding model, token usage and monetary cost remain unavailable.
+
+## November 7, 2026 — alternate Atelier interface
+
+- User requested a recreated UI with an elegant fashion aesthetic that still makes
+  user goals easy to understand. Codex implemented a separate FashionStudio Swing
+  view and studio launcher, retaining the existing TrendGUI for comparison.
+- Four sections expose search/history/analysis, discovery/emerging, comparison,
+  and AI questions/reports. Ivory/charcoal styling, serif headings and lavender
+  metrics emphasize calculated results; evidence and AI narrative have separate tabs.
+- Reuses the existing controller, commands, agent, chart and report exporter.
+  No additional UI framework or paid API requests were needed.
+- 147 checks passed, including 15 new alternate-view checks for navigation/actions,
+  sorted summaries, invalid-input recovery, report export and overwrite rejection.
+  Inspected previews at 1320×900 and 1180×780 and corrected cramped result spacing.
+  Native desktop review and student review remain pending. Coding model, tokens
+  and monetary cost remain unavailable.

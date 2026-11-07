@@ -147,3 +147,12 @@ The placeholder environment override causes no paid request, leaves the actual
 - Rebuild stage2-report.pdf and verify all links/figures, then remove the review-draft
   status only when the missing materials and student review are complete.
 - Push the final PDF, source, README and demo links; submit the repository URL.
+
+## Alternate Atelier UI (November 7)
+
+Launch `./scripts/studio.sh data/sample-trends.csv` to demonstrate the new view.
+Explore covers F02/F04/F05/F09; Discover covers F06/F07; Compare covers F08;
+AI reports covers F01/F10; sidebar Import CSV covers F03. Use the same feature
+inputs and expected results described above. The original GUI remains available.
+For F10, show both AI interpretation and Evidence & sources, then Save report.
+Review the native dialogs/window before recording.
