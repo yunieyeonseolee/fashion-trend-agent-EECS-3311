@@ -135,3 +135,14 @@ LLM integration in the application.
   Inspected previews at 1320×900 and 1180×780 and corrected cramped result spacing.
   Native desktop review and student review remain pending. Coding model, tokens
   and monetary cost remain unavailable.
+
+## November 7, 2026 — UI revision following user review
+
+- User rejected the added branding, serif typography and layout proportions.
+  Removed the invented name and decorative headings from the UI, standardized
+  Arial text, narrowed navigation, aligned action buttons and weighted input widths.
+  Replaced default styled tabs with flat tabs and fitted analysis table columns to
+  the available width. Original GUI and application behavior are unchanged.
+- All 147 checks passed. Inspected the revised 1180×780 preview; all eight analysis
+  columns fit. Native desktop review remains pending. No paid API calls.
+- Coding model, token usage and monetary cost remain unavailable.

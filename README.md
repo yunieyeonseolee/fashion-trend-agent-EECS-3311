@@ -44,14 +44,14 @@ The repository currently lives in memory. Each command loads its supplied CSV;
 import does not create a persistent database. `TrendRepository` also deduplicates
 repeated imports within the same process.
 
-## Atelier — alternate fashion studio UI
+## Alternate GUI
 
 ```bash
 ./scripts/studio.sh data/sample-trends.csv
 ```
 
-The new editorial interface uses ivory, charcoal, serif headings and lavender
-metric cards. Four navigation sections keep tasks explicit: **Explore** for
+The alternate interface uses a consistent sans-serif font, ivory and charcoal
+colors, compact navigation and lavender metric cards. Four navigation sections keep tasks explicit: **Explore** for
 search/analysis/history, **Discover** for category rankings and emerging trends,
 **Compare** for two trends, and **AI reports** for questions and reports. Import
 CSV from the sidebar. The original GUI below remains available for comparison.
