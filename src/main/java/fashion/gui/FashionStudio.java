@@ -47,7 +47,7 @@ public final class FashionStudio extends JPanel {
         var sidebar=new JPanel(new BorderLayout(0,32)); sidebar.setOpaque(false);
         sidebar.setPreferredSize(new Dimension(160,500));
         var brand=new JPanel(new GridLayout(0,1,0,8)); brand.setOpaque(false);
-        brand.add(label("Navigation",13,true));
+        brand.add(label("<html>Fashion Trend<br>Intelligence</html>",16,true));
         sidebar.add(brand,BorderLayout.NORTH);
         var menu=new JPanel(new GridLayout(0,1,0,10)); menu.setOpaque(false);
         String[] names={"Explore", "Discover", "Compare", "AI reports"};
