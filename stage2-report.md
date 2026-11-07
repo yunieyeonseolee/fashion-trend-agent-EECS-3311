@@ -2,12 +2,12 @@
 
 Fashion Trend Intelligence + Microtrend Detection Agent — EECS 3311
 
-Author: Yeonseo Lee. Prepared: November 6, 2026. Submission deadline: November 10, 2026.
+Author: Yeonseo Lee. Prepared: November 7, 2026. Submission deadline: November 10, 2026.
 
 **REVIEW DRAFT — not ready for final submission.** Application functionality is implemented and basic verification has passed. Demonstration videos, exact coding-tool model/usage/cost records, student review and a manual desktop check are still pending. These items are explicitly identified below; no unavailable evidence is claimed.
 
 Repository: [fashion-trend-agent-EECS-3311](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311).
-Implementation baseline: [5c51f96](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/5c51f96138cdf4c33d0c0beb9795ddc37aa5f98f).
+Implementation baseline: [d49d45d](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/d49d45d2540fcf3938f9476bdbfe59ef799ed8ec).
 
 ## 1. Project overview and implementation status
 
@@ -18,6 +18,18 @@ All ten Stage 1 feature IDs remain in scope and have implemented workflows. Some
 Natural-language questions use OpenAI's Responses API: the model proposes a structured plan, Java validates the complete plan, read-only tools execute local retrieval/analysis, and a separate model call explains the resulting evidence. Reports for a known trend use a fixed three-step plan. This is more than forwarding a prompt: the application executes deterministic tools, retains evidence and can return numeric reports when narrative generation fails. The runtime model is configured locally; gpt-6-luna was verified by two live CLI workflows on November 5.
 
 The included dataset is synthetic demonstration data, not measured fashion popularity. Storage is in memory, scoring is heuristic, and generated prose requires review. No claim is made that the sample results establish real-world trends. All major operations are accessible in GUI and CLI; report file export is a GUI enhancement. API keys are loaded from ignored local configuration and were not committed.
+
+The alternate **Atelier** interface was added November 7 in `fashion.gui.FashionStudio`.
+Run `./scripts/studio.sh data/sample-trends.csv`; the original `TrendGUI` remains
+available through `scripts/gui.sh`. Both use the same controller, commands, agent,
+history chart and report exporter. Atelier groups features into Explore
+(F02/F04/F05/F09), Discover (F06/F07), Compare (F08), AI reports (F01/F10), and
+sidebar CSV import (F03). `showPage()` configures visible inputs/actions, `submit()`
+executes commands in a SwingWorker, `render()` displays responses, and
+`exportReport()` preserves complete reports. It adds no scoring or LLM behavior.
+AI interpretation and evidence have separate tabs; navigation clears old results.
+This is an additional MVC view, and the feature mappings below describe the shared
+implementation used by both interfaces. Native desktop review remains pending.
 
 ## 2. Feature-to-implementation mapping
 
@@ -231,7 +243,7 @@ reporting periods were missed; no retrospective activity is claimed.
 | --- | --- | --- | --- |
 | October 20–26, 2026 | 5 | 0 | Missed |
 | October 27–November 2, 2026 | 5 | 0 | Missed |
-| November 3–9, 2026 | 5 | 6 | Minimum met |
+| November 3–9, 2026 | 5 | 7 | Minimum met |
 
 | Date | Code commit | Implementation and verification |
 | --- | --- | --- |
@@ -241,6 +253,7 @@ reporting periods were missed; no retrospective activity is claimed.
 | November 5, 2026 | [9f28aa9 — Integrate validated LLM plans and evidence-grounded trend reports](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/9f28aa974a7c0f915913e42242896c5ecd945dbc) | LLM planning/tools, evidence reports and GUI/CLI integration. Passed 108 checks and 8 CLI regressions. API tests are offline/local-fake; live-model verification pending. Pushed to origin/main November 5. |
 | November 6, 2026 | [0c6efff — Add selected-trend navigation and safe report export to GUI](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/0c6efff273b328f5fd621086d41064086365a8cc) | Selected-trend navigation and report export with overwrite protection and fallback evidence. Passed 128 checks including 37 Swing and 4 export checks. Pushed to origin/main November 6. |
 | November 6, 2026 | [5c51f96 — Polish Swing dashboard with selected-trend summaries and accessible controls](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/5c51f96138cdf4c33d0c0beb9795ddc37aa5f98f) | Dashboard summary cards follow sorted selections and clear on errors; accessible scrolling controls and progress feedback. Passed 132 checks including 41 Swing checks; previews inspected. Pushed to origin/main November 6. |
+| November 7, 2026 | [d49d45d — Add Atelier fashion studio](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/d49d45d2540fcf3938f9476bdbfe59ef799ed8ec) | Alternate FashionStudio UI with explicit task navigation and separate narrative/evidence tabs. Passed 147 checks including 15 Atelier checks; two-size previews inspected. Pushed to origin/main November 7. |
 
 Documentation-only commits are excluded from these counts. The detailed ongoing
 record is [docs/weekly-commits.md](docs/weekly-commits.md). The assignment specifies
@@ -251,7 +264,7 @@ in later periods do not compensate for earlier periods.
 
 The GUI now includes selected-analysis summary cards, a scrolling sidebar with a fixed Run button, horizontal table scrolling and a background-work indicator. Cards show existing calculated metrics and follow sorted selections; they clear on errors.
 
-The current automated suite runs **132 checks**: 17 data-layer, 19 analysis, 19 shared workflow, 41 Swing GUI, 32 LLM integration, and 4 report export checks. Run `./scripts/test.sh`. Eight additional CLI smoke/error checks were run during integration. Tests verify malformed CSV/date/value handling, exact deduplication, filtering, known rising/falling/flat histories, irregular intervals, zero baselines, sparse histories, strategy differences, shared responses, partial comparisons, sorted GUI selection, background execution, report export and overwrite/failure recovery.
+The current automated suite runs **147 checks**: 17 data-layer, 19 analysis, 19 shared workflow, 41 original Swing GUI, 32 LLM integration, 4 report export and 15 alternate Atelier GUI checks. Run `./scripts/test.sh`. Eight additional CLI smoke/error checks were run during integration. Tests verify malformed CSV/date/value handling, exact deduplication, filtering, known rising/falling/flat histories, irregular intervals, zero baselines, sparse histories, strategy differences, shared responses, partial comparisons, sorted GUI selection, background execution, report export and overwrite/failure recovery.
 
 API tests use a local fake HTTP server and test doubles. They cover request schema/authentication, incomplete/refused/malformed responses, invalid tool names/dates/catalog entries, step limits, clarification and numeric fallback. They do not spend credits or count as proof of real-model availability. Separately, the live Ask and Report smoke tests succeeded with actual gpt-6-luna requests on November 5. Results and usage are documented in Section 5.
 

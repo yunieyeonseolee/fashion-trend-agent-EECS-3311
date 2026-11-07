@@ -99,7 +99,7 @@ def add(node):
 
 def footer(canvas,doc):
     canvas.saveState();canvas.setFont(font,8);canvas.setFillColor(colors.HexColor('#6d647a'))
-    canvas.drawString(margin,24,'EECS 3311 · Stage 2 · Review draft · November 6, 2026')
+    canvas.drawString(margin,24,'EECS 3311 · Stage 2 · Review draft · November 7, 2026')
     canvas.drawRightString(page_width-margin,24,str(doc.page));canvas.restoreState()
 
 html=markdown.markdown((ROOT/'stage2-report.md').read_text(),extensions=['tables','fenced_code'])
