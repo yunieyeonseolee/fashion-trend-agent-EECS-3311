@@ -7,7 +7,7 @@ Author: Yeonseo Lee. Prepared: November 7, 2026. Submission deadline: November 1
 **REVIEW DRAFT — not ready for final submission.** Application functionality is implemented and basic verification has passed. Demonstration videos, exact coding-tool model/usage/cost records, student review and a manual desktop check are still pending. These items are explicitly identified below; no unavailable evidence is claimed.
 
 Repository: [fashion-trend-agent-EECS-3311](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311).
-Implementation baseline: [d49d45d](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/d49d45d2540fcf3938f9476bdbfe59ef799ed8ec).
+Implementation baseline: [cdaf275](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/cdaf27597248124d991e8b28aa5bf1f9aaa54a86).
 
 ## 1. Project overview and implementation status
 
@@ -19,10 +19,12 @@ Natural-language questions use OpenAI's Responses API: the model proposes a stru
 
 The included dataset is synthetic demonstration data, not measured fashion popularity. Storage is in memory, scoring is heuristic, and generated prose requires review. No claim is made that the sample results establish real-world trends. All major operations are accessible in GUI and CLI; report file export is a GUI enhancement. API keys are loaded from ignored local configuration and were not committed.
 
-The alternate **Atelier** interface was added November 7 in `fashion.gui.FashionStudio`.
+The alternate interface was added November 7 in `fashion.gui.FashionStudio`.
 Run `./scripts/studio.sh data/sample-trends.csv`; the original `TrendGUI` remains
-available through `scripts/gui.sh`. Both use the same controller, commands, agent,
-history chart and report exporter. Atelier groups features into Explore
+available through `scripts/gui.sh`. The November 7 user review prompted removal of added branding and serif headings,
+consistent sans-serif typography, flat tabs, narrower navigation and better fitting
+input/table widths. Both use the same controller, commands, agent,
+history chart and report exporter. The alternate view groups features into Explore
 (F02/F04/F05/F09), Discover (F06/F07), Compare (F08), AI reports (F01/F10), and
 sidebar CSV import (F03). `showPage()` configures visible inputs/actions, `submit()`
 executes commands in a SwingWorker, `render()` displays responses, and
@@ -243,7 +245,7 @@ reporting periods were missed; no retrospective activity is claimed.
 | --- | --- | --- | --- |
 | October 20–26, 2026 | 5 | 0 | Missed |
 | October 27–November 2, 2026 | 5 | 0 | Missed |
-| November 3–9, 2026 | 5 | 7 | Minimum met |
+| November 3–9, 2026 | 5 | 8 | Minimum met |
 
 | Date | Code commit | Implementation and verification |
 | --- | --- | --- |
@@ -254,6 +256,7 @@ reporting periods were missed; no retrospective activity is claimed.
 | November 6, 2026 | [0c6efff — Add selected-trend navigation and safe report export to GUI](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/0c6efff273b328f5fd621086d41064086365a8cc) | Selected-trend navigation and report export with overwrite protection and fallback evidence. Passed 128 checks including 37 Swing and 4 export checks. Pushed to origin/main November 6. |
 | November 6, 2026 | [5c51f96 — Polish Swing dashboard with selected-trend summaries and accessible controls](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/5c51f96138cdf4c33d0c0beb9795ddc37aa5f98f) | Dashboard summary cards follow sorted selections and clear on errors; accessible scrolling controls and progress feedback. Passed 132 checks including 41 Swing checks; previews inspected. Pushed to origin/main November 6. |
 | November 7, 2026 | [d49d45d — Add Atelier fashion studio](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/d49d45d2540fcf3938f9476bdbfe59ef799ed8ec) | Alternate FashionStudio UI with explicit task navigation and separate narrative/evidence tabs. Passed 147 checks including 15 Atelier checks; two-size previews inspected. Pushed to origin/main November 7. |
+| November 7, 2026 | [cdaf275 — Correct UI typography and proportions](https://github.com/yunieyeonseolee/fashion-trend-agent-EECS-3311/commit/cdaf27597248124d991e8b28aa5bf1f9aaa54a86) | Revised branding, font and layout following user feedback. All 147 checks passed; smaller-window preview inspected. Pushed to origin/main November 7. |
 
 Documentation-only commits are excluded from these counts. The detailed ongoing
 record is [docs/weekly-commits.md](docs/weekly-commits.md). The assignment specifies
