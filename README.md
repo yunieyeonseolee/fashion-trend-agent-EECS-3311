@@ -1,7 +1,7 @@
 # Fashion Trend Intelligence Agent — EECS 3311
 
 Java implementation of the [Stage 1 design](Stage%201/Stage1_Design_Report_220518676.pdf).
-Stage 2 is due November 10, 2026.
+Stage 2 submission deadline: November 10, 2026.
 
 ## Current implementation
 
@@ -10,10 +10,11 @@ and filtered retrieval (F02), deterministic analysis and discovery/comparison (F
 and history visualization (F09). The Swing GUI and CLI use the same shared controller
 and facade. Natural-language planning (F01) and evidence-grounded reports (F10) are
 implemented with OpenAI Responses API integration. **Live Ask and Report smoke tests passed with `gpt-6-luna` on November 5, 2026.**
-Automated API tests still use a local fake server. See [live verification](docs/live-verification.md). See the
-[implementation report and feature mapping](stage2-report.md).
+Automated API tests use a local fake server. See [live verification](docs/live-verification.md)
+and the [implementation report](stage2-report.pdf) for feature mappings, design
+patterns, AI collaboration records, and the weekly commit summary.
 
-## Prerequisites and running
+## Prerequisites
 
 Install JDK 17 or newer and use Bash (macOS/Linux, or Git Bash/WSL on Windows).
 Install `curl` plus `shasum` or `sha256sum`. Scripts download pinned Gson 2.13.2
@@ -22,8 +23,21 @@ Internet is needed for that first dependency download and live API calls. Maven 
 not required. Cached dependencies live under ignored `build/deps/`. See
 [dependency details](docs/dependencies.md).
 
+## Quick start
+
+From the repository root, launch the section-based GUI with the sample data:
+
 ```bash
-./scripts/test.sh
+./scripts/studio.sh data/sample-trends.csv
+```
+
+A graphical desktop is required for the GUI. Search, history, analysis, discovery
+and comparison work without an API key. For Ask and AI report interpretation,
+complete [local API configuration](#local-api-configuration).
+
+## Command-line usage
+
+```bash
 ./scripts/run.sh import data/sample-trends.csv
 ./scripts/run.sh search data/sample-trends.csv "mary"
 ./scripts/run.sh history data/sample-trends.csv "mary jane flats"
@@ -44,17 +58,23 @@ The repository currently lives in memory. Each command loads its supplied CSV;
 import does not create a persistent database. `TrendRepository` also deduplicates
 repeated imports within the same process.
 
-## Alternate GUI
+## Desktop GUI — section-based layout
 
 ```bash
 ./scripts/studio.sh data/sample-trends.csv
 ```
 
-The alternate interface uses a consistent sans-serif font, ivory and charcoal
-colors, compact navigation and lavender metric cards. Four navigation sections keep tasks explicit: **Explore** for
-search/analysis/history, **Discover** for category rankings and emerging trends,
-**Compare** for two trends, and **AI reports** for questions and reports. Import
-CSV from the sidebar. The original GUI below remains available for comparison.
+Use **Import CSV** in the sidebar to load observations, then choose a section:
+
+| Section | Actions |
+| --- | --- |
+| Explore | Find trends, analyze an exact trend name, or view history |
+| Discover | Rank a category by momentum/growth or find emerging trends |
+| Compare | Compare two exact trend names over an optional date range |
+| AI reports | Ask a natural-language question or create a report for an exact trend |
+
+Summary cards show popularity, short growth, momentum and lifecycle. Select a
+result row to view its analysis or history. The original GUI below remains available.
 
 Search and Ask ignore category/date fields; other actions use the visible filters.
 Selected-result shortcuts open unfiltered analysis/history for that trend/category.
@@ -63,7 +83,7 @@ both. Changing sections clears the displayed results and disables stale exports.
 Work runs in the background. Minimum window size is 1180×780. Headless previews
 were checked at that size and 1320×900; native desktop/file dialogs still need review.
 
-## Desktop GUI
+## Original GUI — operation selector
 
 ```bash
 ./scripts/gui.sh
@@ -187,10 +207,36 @@ The [OpenAI Structured Outputs guide](https://developers.openai.com/api/docs/gui
 documents the `text.format` schema used for planning. The application executes its
 own validated plan through local tools; it does not use native API function-calling.
 
-## Stage 2 records
+## Report and supporting documentation
 
-- [Stage 2 report draft (PDF)](stage2-report.pdf) and [editable source](stage2-report.md)
-- [Rebuild the report and diagrams](docs/report-building.md)
+The [Stage 2 report (PDF)](stage2-report.pdf) is the central submission document.
+Its [Markdown source](stage2-report.md) contains the same report structure:
+
+- Sections 1–4: implementation status, feature mappings, design patterns and changes.
+- Section 5: AI tools, collaboration records and usage/cost information.
+- Section 6: verification results and weekly commit links.
+- Section 7: feature demonstration links and timestamps.
+
+These records are maintained in the report rather than separate planning,
+collaboration, demo-guide or weekly-log files.
+
+Supporting files:
+
+- [Architecture](docs/architecture.md) and [diagram assets](docs/diagrams/)
+- [Dependencies](docs/dependencies.md)
+- [Live API verification](docs/live-verification.md)
+- [Report rebuilding instructions](docs/report-building.md)
+
+## Verification
+
+```bash
+./scripts/test.sh
+```
+
+The suite checks the data layer, analysis, shared workflows, both Swing interfaces,
+LLM integration using local test doubles, and report export. Automated tests do not
+make paid API requests. GUI previews are generated under ignored `build/`.
+Native desktop dialogs and the final demonstration recordings require manual review.
 
 The PDF includes updated diagrams and the weekly commit summary. It remains a
 review draft: accessible feature demonstration videos, student review and AI tool
