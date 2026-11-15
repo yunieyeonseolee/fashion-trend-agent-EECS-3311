@@ -8,7 +8,9 @@ record that honestly and never backdate or manufacture commits.
 
 - At meaningful implementation/test milestones, create descriptive commits and
   push to the existing course repository, unless the user directs otherwise.
-- Keep `docs/weekly-commits.md` and the weekly summary in `stage2-report.md` in sync.
+- Maintain the weekly summary directly in `stage2-report.md`.
+  The user removed the optional separate documentation logs on November 15, 2026;
+  do not recreate them.
   Record the full commit link, Toronto-local date, concrete change, verification,
   and whether the push succeeded. Never label a local-only commit as pushed.
 - Count only meaningful implementation/test commits. Documentation-only updates

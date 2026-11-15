@@ -11,7 +11,7 @@ and history visualization (F09). The Swing GUI and CLI use the same shared contr
 and facade. Natural-language planning (F01) and evidence-grounded reports (F10) are
 implemented with OpenAI Responses API integration. **Live Ask and Report smoke tests passed with `gpt-6-luna` on November 5, 2026.**
 Automated API tests still use a local fake server. See [live verification](docs/live-verification.md). See the
-[implementation plan and feature mapping](docs/stage2-plan.md).
+[implementation report and feature mapping](stage2-report.md).
 
 ## Prerequisites and running
 
@@ -141,7 +141,7 @@ See the [current architecture diagram](docs/architecture.md).
 
 Scores use documented, deterministic heuristics; they are not forecasts. At least
 three distinct dates are needed. Same-date observations are averaged, and growth
-rates account for elapsed days. See [formulas and limitations](docs/stage2-plan.md#analysis-formulas-and-current-verification).
+rates account for elapsed days. See [formulas and limitations](stage2-report.md#44-analysis-rules-and-limitations).
 
 ## Local API configuration
 
@@ -189,13 +189,9 @@ own validated plan through local tools; it does not use native API function-call
 
 ## Stage 2 records
 
-- [Implementation milestones and feature/pattern status](docs/stage2-plan.md)
-- [AI collaboration log](docs/ai-collaboration.md)
-- [Weekly commit summary](docs/weekly-commits.md)
 - [Stage 2 report draft (PDF)](stage2-report.pdf) and [editable source](stage2-report.md)
-- [Feature demonstration and manual review guide](docs/demo-guide.md)
 - [Rebuild the report and diagrams](docs/report-building.md)
 
 The PDF includes updated diagrams and the weekly commit summary. It remains a
-review draft: accessible feature demonstration videos, student review and missing
-AI coding-tool usage metadata still need attention before submission.
+review draft: accessible feature demonstration videos, student review and AI tool
+cost records still need attention before submission.
