@@ -67,6 +67,13 @@ public final class LLMIntegrationTest {
         var clarify=new FashionTrendAgent(repository(),(i,input,schema)->reply("{\"steps\":[],\"clarification\":\"Which footwear trend?\"}"));
         var clarified=controller.execute(new AnalyzeCommand(clarify,AgentRequest.trend(ASK,"Is it growing?",null,null,null)));
         check(clarified.message().equals("Which footwear trend?") && clarified.report()==null,"ambiguous input requests clarification without tools");
+        var plannerCalls=new AtomicInteger();
+        var noEmerging=new FashionTrendAgent(repository(),(i,input,schema)->{plannerCalls.incrementAndGet();return reply(plan("EMERGING",null).replace("\"category\":null","\"category\":\"footwear\""));});
+        var empty=controller.execute(new AnalyzeCommand(noEmerging,AgentRequest.trend(ASK,"What footwear trends are emerging?",null,null,null)));
+        check(empty.success() && empty.analyses().isEmpty() && empty.message().contains("No qualifying") && plannerCalls.get()==1,"empty tool result is a valid answer without synthesis");
+        var failing=new FashionTrendAgent(repository(),(i,input,schema)->reply(plan("ANALYZE","mary jane flats").replace("\"category\":null","\"category\":\"accessories\"")));
+        var failed=controller.execute(new AnalyzeCommand(failing,AgentRequest.trend(ASK,"How are flats doing in accessories?",null,null,null)));
+        check(!failed.success() && failed.message().contains("No observations"),"all tools failing remains an error with its cause");
         var planner=new AgentPlanner(fake,repo);
         for (String invalid:List.of(plan("IMPORT","mary jane flats"),plan("ASK","mary jane flats"),plan("ANALYZE","invented trend"),
                 plan("ANALYZE","mary jane flats").replace("\"from\":null","\"from\":\"bad-date\""),

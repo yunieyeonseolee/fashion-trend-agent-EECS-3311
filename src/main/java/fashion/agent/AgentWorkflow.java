@@ -65,7 +65,11 @@ public final class AgentWorkflow {
         var analyses=results.stream().flatMap(r -> r.response().analyses().stream()).distinct().toList();
         var signals=results.stream().flatMap(r -> r.response().signals().stream()).distinct().toList();
         var matches=results.stream().flatMap(r -> r.response().matches().stream()).distinct().toList();
-        return new AgentResponse(available,"Executed " + results.size() + " analysis tools.",matches,signals,analyses,warnings,
+        // An empty result from a working tool is a valid answer; only all tools failing is an error.
+        boolean succeeded=results.stream().anyMatch(r -> r.response().success());
+        String message=available ? "Executed " + results.size() + " analysis tools."
+                : results.stream().map(r -> r.response().message()).filter(m -> !m.isBlank()).findFirst().orElse("No matching evidence.");
+        return new AgentResponse(succeeded,message,matches,signals,analyses,warnings,
                 new TrendReport(evidence,narrative,usage));
     }
 }
