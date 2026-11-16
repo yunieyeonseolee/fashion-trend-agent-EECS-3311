@@ -215,8 +215,8 @@ export still need a supplementary recording.
 
 ## Report and supporting documentation
 
-The [Stage 2 report (Word)](stage2-report.docx) is the current submission draft.
-The [PDF](stage2-report.pdf) is an older draft and needs re-exporting from Word.
+The [Stage 2 report (Word)](stage2-report.docx) and matching
+[PDF](stage2-report.pdf) are the current submission drafts.
 The Word report is the editing source; the older
 [Markdown draft](stage2-report.md) is retained as a development record.
 The report contains:

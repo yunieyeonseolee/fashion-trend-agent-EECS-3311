@@ -1,4 +1,7 @@
-> Current report: edit `stage2-report.docx` and export the PDF from Word. The
+> Current report: edit `stage2-report.docx` and export the PDF from Word, or run
+> `build/report-venv/bin/python scripts/export-word-report.py`. This exporter uses
+> the existing documentation dependencies and preserves report text, links and
+> figures with consistent PDF styling. The
 > instructions below rebuild the older Markdown draft and must not overwrite the
 > current submission PDF unless the sources have first been synchronized.
 

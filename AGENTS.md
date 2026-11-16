@@ -24,6 +24,6 @@ record that honestly and never backdate or manufacture commits.
 - Keep credentials and local build artifacts out of all commits.
 
 The user-edited `stage2-report.docx` is now the authoritative report source; export
-its PDF from Word. Do not overwrite the current PDF using the older Markdown
+its PDF from Word or run `build/report-venv/bin/python scripts/export-word-report.py`. Do not overwrite the current PDF using the older Markdown
 builder. Retain the Markdown development record and record new milestones in
 both it and the current report. F10 demonstration footage remains pending.
