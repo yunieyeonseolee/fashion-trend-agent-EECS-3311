@@ -207,6 +207,11 @@ The [OpenAI Structured Outputs guide](https://developers.openai.com/api/docs/gui
 documents the `text.format` schema used for planning. The application executes its
 own validated plan through local tools; it does not use native API function-calling.
 
+## Demonstration video
+
+[Watch or download the demonstration video](demos/Demo%20Video-YeonseoLee.mp4).
+Feature starting timestamps still need to be added to the report’s demonstration index.
+
 ## Report and supporting documentation
 
 The [Stage 2 report (PDF)](stage2-report.pdf) is the central submission document.
@@ -239,5 +244,5 @@ make paid API requests. GUI previews are generated under ignored `build/`.
 Native desktop dialogs and the final demonstration recordings require manual review.
 
 The PDF includes updated diagrams and the weekly commit summary. It remains a
-review draft: accessible feature demonstration videos, student review and AI tool
+review draft: feature demonstration timestamps, student review and AI tool
 cost records still need attention before submission.
