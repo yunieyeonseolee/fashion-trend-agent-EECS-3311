@@ -23,6 +23,7 @@ record that honestly and never backdate or manufacture commits.
   Keep later work separate; do not count November 10 toward the third period.
 - Keep credentials and local build artifacts out of all commits.
 
-`stage2-report.md` and `stage2-report.pdf` are review drafts. Rebuild the PDF after
-report changes using `scripts/build-report.py` (see `docs/report-building.md`).
-Video links, student review and unavailable usage records still need attention.
+The user-edited `stage2-report.docx` is now the authoritative report source; export
+its PDF from Word. Do not overwrite the current PDF using the older Markdown
+builder. Retain the Markdown development record and record new milestones in
+both it and the current report. F10 demonstration footage remains pending.

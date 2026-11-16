@@ -210,12 +210,16 @@ own validated plan through local tools; it does not use native API function-call
 ## Demonstration video
 
 [Watch or download the demonstration video](demos/Demo%20Video-YeonseoLee.mp4).
-Feature starting timestamps still need to be added to the report’s demonstration index.
+Feature timestamps are linked in the Word/PDF report. F10 report generation and
+export still need a supplementary recording.
 
 ## Report and supporting documentation
 
-The [Stage 2 report (PDF)](stage2-report.pdf) is the central submission document.
-Its [Markdown source](stage2-report.md) contains the same report structure:
+The [Stage 2 report (Word)](stage2-report.docx) is the current submission draft.
+The [PDF](stage2-report.pdf) is an older draft and needs re-exporting from Word.
+The Word report is the editing source; the older
+[Markdown draft](stage2-report.md) is retained as a development record.
+The report contains:
 
 - Sections 1–4: implementation status, feature mappings, design patterns and changes.
 - Section 5: AI tools, collaboration records and usage/cost information.
@@ -244,5 +248,5 @@ make paid API requests. GUI previews are generated under ignored `build/`.
 Native desktop dialogs and the final demonstration recordings require manual review.
 
 The PDF includes updated diagrams and the weekly commit summary. It remains a
-review draft: feature demonstration timestamps, student review and AI tool
-cost records still need attention before submission.
+review draft: the F10 demonstration and final review still need attention before
+submission.

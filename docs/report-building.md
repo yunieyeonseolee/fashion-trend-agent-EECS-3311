@@ -1,3 +1,7 @@
+> Current report: edit `stage2-report.docx` and export the PDF from Word. The
+> instructions below rebuild the older Markdown draft and must not overwrite the
+> current submission PDF unless the sources have first been synchronized.
+
 # Rebuilding the implementation report
 
 Edit `stage2-report.md`, then regenerate the committed `stage2-report.pdf`:
